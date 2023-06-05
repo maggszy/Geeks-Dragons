@@ -49,53 +49,100 @@ Baza powinna przynajmniej posiadać informacje o:
 - min age
 
 ### Turnieje
-- game name
-- date
+- turniej ID 
+- game ID
+- max teams/ile rund
+- wpisowe
+- nagroda
 
 ### Terminarz
 - date
-- game name
-- how many teams
+- turniej ID
+
+### Wyniki
+- turniej ID
+- drużyna A ID
+- drużyna B ID
+- runda 
+- wynik
+
+### Gracze
+- gracz ID
+- gracz name
+- klient ID
+- team ID
+
+### Teams
+- team ID
+- team name
+
 
 ### Finanse/ pomysły
-- wynajmowaniw budynku 
+- payment ID
+- in/out (0/1)
+- typ płatności (wypłada, stałe, turnieje, inne)
+
+
+### Wypłaty
+- payment ID
+- pracownik ID
+- wartość
+- data
+- nazwa
+
+###  Koszty stałe
+- payment ID
+- wartość
+- data
+- nazwa
+
+### Turnieje koszty
+- payment ID
+- wartość
+- data
+- nazwa
+
+### Inne koszty
+- payment ID
+- wartość
+- data
+- nazwa
+
+### Wypożyczenia 
+- payment ID
+- rental ID
+- item ID
+- rental date
+- return date
+- cost (stała cena za dzień wypożyczenia)
+
+
+### Sprzedaż
+- payment ID
+- payment value
+- item ID
+- customer ID
+- employee ID
+
+### Klienci
+- customer ID
+- First name
+- Last name
+- birth date 
+- email 
+- phone number
+- sex?
+
+
+------------------------------------
+- wynajmowanie budynku 
 - wypłaty
 - kaucje
 - dofinansowanie z miasta
 - nagrody na turnieje
 - wpisowe na turniej
 - zakupy rzeczy na turniej
-
-
-### Wypożyczenia 
-- rental ID
-- item ID
-- rental date
-- return date
-- cost ( stała cena za dzień wypożyczenia)
-- payment ID
-
-### Sprzedaż
-- sale ID
-- item ID
-- customer ID
-- employee ID
-- payment ID
-
-### Payments
-- payment ID
-- payment value
-- customer ID
-- employee ID
-
-### Klienci???
-- First name
-- Last name
-- birth year 
-- address
-- email
-- phone number
-- sex?
+-------------------------------------
 
 
 
