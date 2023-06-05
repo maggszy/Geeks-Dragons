@@ -60,11 +60,12 @@ Baza powinna przynajmniej posiadać informacje o:
 - turniej ID
 
 ### Wyniki
+- mecz ID
 - turniej ID
 - drużyna A ID
 - drużyna B ID
 - runda 
-- wynik
+- wynik rundy
 
 ### Gracze
 - gracz ID
