@@ -10,8 +10,24 @@ Baza powinna przynajmniej posiadać informacje o:
 - wypożyczeniach i sprzedaży.
 
 # Notatki
+1. Nasz sklep działa od poniedziału do piątku w godzinach 10-18.
+2. Nie działa w święta.
+3. Mamy 3 pracowników - każdy na pół etatu, 10-14, 12-16, 14-18.
+4. Każdą grę którą mamy na stanie można wypożyczyć (10zl/dzień) lub kupić za cenę wykupu. Trezcia opcja to gra turniejowa.
+5. Mamy osobne gry na turnieje, np po 4 sztuki (wtedy możemy zrobic 3 rundy). Nawet możnaby zahardkodować nazwy tych gier
 
 ## Jakie kolumny?
+
+### Klienci
+- customer ID
+- First name
+- Last name
+- birth date 
+- email 
+- phone number
+- ?sex do generowania?
+1. To można wygenerować na początku np. 1000 klientów, z których pozniej bedziemy losowac i przypiywac im zakupy
+2. Email składa się z imienia i nazwiska
 
 ### Pracownicy
 - employee ID
@@ -25,6 +41,9 @@ Baza powinna przynajmniej posiadać informacje o:
 - date of employment?
 - work end date?
 
+1. Ile pracowników
+2. Dla każdego ID losujemy płeć + odpowiednie imiona i nazwiska, mail składający sie z imienia i nazwiska, losowy numer, datę zatrudnienia. Address ID moze byc taki sam jak employee ID, bo tylko od pracowników zbieramy takie dane
+
 ### Address 
 - address ID
 - city
@@ -32,11 +51,7 @@ Baza powinna przynajmniej posiadać informacje o:
 - street
 - zip code
 - number
-
-### Asortyment/Inventor
-- item ID
-- game ID
-- buy-back price?? (cena wykupienia)
+1. To dla uproszczenia mogą być jakieś wrocławskie dane, może nawet zahardkodowane.
 
 ### Gry
 - game ID
@@ -47,6 +62,22 @@ Baza powinna przynajmniej posiadać informacje o:
 - max players
 - play time
 - min age
+- cena
+1. Wybieramy losowo X gier z naszego pliku na temat gier i każdemu przypisujemy ID - tylko takie gry bedziemy u siebie mieć.
+
+
+### Asortyment/Inventor
+- item ID
+- game ID
+- typ(0 - do kupienia, 1 - do wypożyczenia, 2 - turniej )
+1. Losujemy z jakiegoś rozkładu ile mamy sztuk której gry.
+2. Każdej sztuce przypisujemy item ID
+
+### Terminarz
+- date
+- turniej ID
+1. Turnieje mamy np w pierwsze czwartki miesiąca (jeśli nie ma wtedy święta)
+2. Wygenerowałabym najpierw daty turnieju i przypisałabym im ID
 
 ### Turnieje
 - turniej ID 
@@ -54,35 +85,23 @@ Baza powinna przynajmniej posiadać informacje o:
 - max teams/ile rund
 - wpisowe
 - nagroda
+3. Później wylosowała grę/ zahardkodujemy? bo potrzebujemy mieć tyle gier żeby w nią robić turnieje
+4. Założyłabym 3 rundy, wtedy 16 mecze są w pierwszej rundzie - > 8 gier 
+5. wtedy Maksymalna liczba graczy to 16*4
+6. Wpisowe jakieś losowe 
+7. Nagroda = wpisowe * liczba graczy / 3 
 
-### Terminarz
-- date
-- turniej ID
 
 ### Wyniki
-- mecz ID
+- result ID
 - turniej ID
-- drużyna A ID
-- drużyna B ID
-- runda 
-- wynik rundy
-
-### Gracze
-- gracz ID
-- gracz name
+- pozycja
 - klient ID
-- team ID
-
-### Teams
-- team ID
-- team name
-
+1. Losujemy klientów którzy będą brać udział w turnieju (max graczy * ile meczów w pierwszej rundzie)
 
 ### Finanse/ pomysły
 - payment ID
 - in/out (0/1)
-- typ płatności (wypłada, stałe, turnieje, inne)
-
 
 ### Wypłaty
 - payment ID
@@ -91,51 +110,40 @@ Baza powinna przynajmniej posiadać informacje o:
 - data
 - nazwa
 
-###  Koszty stałe
+###  Koszty/ przepływy
 - payment ID
 - wartość
 - data
 - nazwa
-
-### Turnieje koszty
-- payment ID
-- wartość
-- data
-- nazwa
-
-### Inne koszty
-- payment ID
-- wartość
-- data
-- nazwa
+- typ 
 
 ### Wypożyczenia 
-- payment ID
 - rental ID
+- payment ID
+- klient ID
 - item ID
 - rental date
 - return date
-- cost (stała cena za dzień wypożyczenia)
+- cost: (retun date - rental date ) * cost per day
 
 
 ### Sprzedaż
+- sprzedaż ID
 - payment ID
+- klient ID
 - payment value
 - item ID
-- customer ID
 - employee ID
+1. losuje wektor dni wypożyczeń
+2. losuje wektor item ID
+3. losuje wektor customerów
 
-### Klienci
-- customer ID
-- First name
-- Last name
-- birth date 
-- email 
-- phone number
-- sex?
+
+
 
 
 ------------------------------------
+Pomysły dodatkowe finanse:
 - wynajmowanie budynku 
 - wypłaty
 - kaucje
