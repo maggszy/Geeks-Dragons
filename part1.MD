@@ -153,6 +153,20 @@ Pomysły dodatkowe finanse:
 - zakupy rzeczy na turniej
 -------------------------------------
 
+### Tabele
+
+- [ ] Pracownicy
+- [ ] Address
+- [x] Gry
+- [ ] Asortyment/Inventor
+- [ ] Terminarz
+- [ ] Turnieje
+- [ ] Wyniki
+- [ ] Finanse/ pomysły
+- [ ] Wypłaty
+- [ ] Koszty/ przepływy
+- [ ] Wypożyczenia
+- [ ] Sprzedaż
 
 
 ## Linki
