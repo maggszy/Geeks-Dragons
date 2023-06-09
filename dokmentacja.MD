@@ -50,13 +50,13 @@ $$\Sigma = \left\{\text{adress\_id} \to \text{country}, \text{adress\_id} \to \t
 Adress_id wyznacza nam dokładnie adress zamieszkania i odwrotnie. Zakładamy, że mogą istnieć dwa takie same adresy lecz z innym kodem pocztowym. Kod poczrtowy nie jest wyznaczony przez country + city+ street ponieważ mogą występować takie same miasta w kraju z takimi samymi ulicami i numerami, lecz różniące się kodem pocztowym. 
 
 
-- Tabela Game_stats: R(**game_id**, release_year,min_players,max_players,play_time,min_age,price)
+- Tabela Games: R(**game_id**, release_year,min_players,max_players,play_time,min_age,price)
 
 $$\Sigma = \left\{ \text{game\_id} \to \text{release\_year},\text{game\_id} \to \text{min\_players},\text{game\_id} \to \text{max\_players},\text{game\_id} \to \text{play\_time}, \text{game\_id} \to \text{min\_age}, \text{game\_id} \to \text{price}  \right\}$$
 
 Game id definiuje jednoznacznie rok wydania, minimalną ilość groczy, maksymalną ilość grczy, czas gry, minmalny wiek graczy oraz cenę zakupu gry.
 
-- Tabela Game_title: R(**game_id**, title, description)
+- Tabela Games_title: R(**game_id**, title, description)
  $$\Sigma = \left\{ \text{game\_id} \to \text{title},\text{game\_id} \to \text{description},\text{title} + \text{description} \to \text{game\_id} \right\} $$
 
 Każda gra ma zdefinowany tytuł i opis. Może się zdarzyć sytuacja gdzie dwie gry mają ten sam tytuł albo opis. Zakładamy że połączenie tytułu i opisu daje nam jednoznacznie informację o grze.
