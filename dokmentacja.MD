@@ -6,9 +6,9 @@ Klucze gółwne zaznaczamy przez pogrubienie
 - Tabela Customers: R(**customer_id**, first_name, last_name, birth_date)
  $$\Sigma = \left\{ \text{customer\_id} \to \text{first\_name}, \text{customer\_id} \to  \text{last\_name}, \text{customer\_id} \to \text{birth\_name}    \right\} $$  
 
-customer_id mówi nam jednoznacznie jaki to jest klient , więc zanmy jego imię, nazwisko oraz datę urodzin. Imię i nazwisko oraz data urodzin klienta nie wyznacza nam jednoznacznie customer_id, ponieważ klienci mogą tak samo się nazywać i urodzić się w tym samym dniu przykładowo w bazie możemy mieć dwóch Janów Kowalski urodzonych 01.01.2001.  
+customer_id mówi nam jednoznacznie jaki to jest klient , więc znamy jego imię, nazwisko oraz datę urodzin. Imię i nazwisko oraz data urodzin klienta nie wyznacza nam jednoznacznie customer_id, ponieważ klienci mogą tak samo się nazywać i urodzić się w tym samym dniu przykładowo w bazie możemy mieć dwóch Janów Kowalski urodzonych 01.01.2001.  
 
-- Tabela Customers_mails: R(**customer_id**, email)
+- Tabela Customers_emails: R(**customer_id**, email)
  $$\Sigma = \left\{ \text{customer\_id} \to \text{email}, \text{email} \to \text{customer\_id}   \right\} $$  
 
 customer_id mówi nam jednoznacznie o mailu klienta, ponieważ maile są unikatowe, wynikanie działa w dwie strony. Zakładamy, że każdy klient ma jednego maila, mail może być użyty tylko dla jednej osoby.
@@ -23,12 +23,12 @@ customer_id mówi nam jednoznacznie o telefonie klienta, ponieważ numery telefo
 
  Zakładamy, że imię jednoznacznie mówi nam o płci ( nie ma takiego samego imienia dla różnych płci).
  
-- Tabela Employee: R(**employee_id**, first_name, last_name,start_working_date,end_working_date)
- $$\Sigma = \left\{ \text{employee\_id} \to \text{first\_name}, \text{employee\_id} \to  \text{last\_name}, \text{employee\_id} \to \text{start\_working\_date}, \text{employee\_id} \to \text{start\_working\_date}    \right\} $$  
+- Tabela Employees: R(**employee_id**, first_name, last_name,start_work_date,end_work_date)
+ $$\Sigma = \left\{ \text{employee\_id} \to \text{first\_name}, \text{employee\_id} \to  \text{last\_name}, \text{employee\_id} \to \text{start\_work\_date}, \text{employee\_id} \to \text{start\_work\_date}    \right\} $$  
 
-employee_id mówi nam jednoznacznie jaki to jest pracownik , więc zanmy jego imię, nazwisko, datę zatrudnienia, datę końca pracy . Imię, nazwisko, data zatrudnienia, data końca pracy nie wyznacza nam jednoznacznie pracownika, ponieważ pracownicy mogą tak samo się nazywać i być zatrudnieni w tym samy czasie i skończyć pracę też w tym samy dniu.  
+employee_id mówi nam jednoznacznie jaki to jest pracownik, więc zanmy jego imię, nazwisko, datę zatrudnienia, datę końca pracy. Imię, nazwisko, data zatrudnienia, data końca pracy nie wyznacza nam jednoznacznie pracownika, ponieważ pracownicy mogą tak samo się nazywać i być zatrudnieni w tym samy czasie i skończyć pracę też w tym samy dniu.  
 
-- Tabela Employee_mails: R(**employee_id**, email)
+- Tabela Employee_emails: R(**employee_id**, email)
  $$\Sigma = \left\{ \text{employee\_id} \to \text{email}, \text{email} \to \text{employee\_id}   \right\} $$  
 
 employee_id mówi nam jednoznacznie o mailu pracownika, ponieważ maile są unikatowe, wynikanie działa w dwie strony. Zakładamy, że każdy pracownik ma jednego maila, mail może być użyty tylko dla jednej osoby.
@@ -43,64 +43,64 @@ employee_id mówi nam jednoznacznie o telefonie pracownika, ponieważ numery tel
 
 Każdy pracownik ma przypisany jeden adress, ale jeden adrees może mieć kilku pracowników.
 
-- Tabela Address_book: R(**adress_id**, country, city, street,number,zip_code)
+- Tabela Addresses: R(**adress_id**, country, city, street,number,postal_code)
 
-$$\Sigma = \left\{\text{adress\_id} \to \text{country}, \text{adress\_id} \to \text{city},\text{adress\_id} \to \text{street},\text{adress\_id} \to \text{number}\text{adress\_id} \to \text{zip\_code}, \text{country} + \text{city} +\text{street} +\text{number} + \text{zip\_code} \to \text{adress\_id} \right\}$$
+$$\Sigma = \left\{\text{adress\_id} \to \text{country}, \text{adress\_id} \to \text{city},\text{adress\_id} \to \text{street},\text{adress\_id} \to \text{number}\text{adress\_id} \to \text{postal\_code}, \text{country} + \text{city} +\text{street} +\text{number} + \text{postal\_code} \to \text{adress\_id} \right\}$$
 
 Adress_id wyznacza nam dokładnie adress zamieszkania i odwrotnie. Zakładamy, że mogą istnieć dwa takie same adresy lecz z innym kodem pocztowym. Kod poczrtowy nie jest wyznaczony przez country + city+ street ponieważ mogą występować takie same miasta w kraju z takimi samymi ulicami i numerami, lecz różniące się kodem pocztowym. 
 
 
-- Tabela Game_stats: R(**game_id**, release_date,min_players,max_players,play_time,min_age,price)
+- Tabela Game_stats: R(**game_id**, release_year,min_players,max_players,play_time,min_age,price)
 
-$$\Sigma = \left\{ \text{game\_id} \to \text{release\_date},\text{game\_id} \to \text{min\_players},\text{game\_id} \to \text{max\_players},\text{game\_id} \to \text{play\_time}, \text{game\_id} \to \text{min\_age}, \text{game\_id} \to \text{price}  \right\}$$
+$$\Sigma = \left\{ \text{game\_id} \to \text{release\_year},\text{game\_id} \to \text{min\_players},\text{game\_id} \to \text{max\_players},\text{game\_id} \to \text{play\_time}, \text{game\_id} \to \text{min\_age}, \text{game\_id} \to \text{price}  \right\}$$
 
-Game id definiuje jednoznacznie datę wydania, minimalną ilość groczy, maksymalną ilość grczy, czas gry, minmalny wiek graczy oraz cenę zakupu gry.
+Game id definiuje jednoznacznie rok wydania, minimalną ilość groczy, maksymalną ilość grczy, czas gry, minmalny wiek graczy oraz cenę zakupu gry.
 
-- Tabela Game_title: R(**game_id**, game_name, description)
- $$\Sigma = \left\{ \text{game\_id} \to \text{game\_name},\text{game\_id} \to \text{description},\text{game\_name} + \text{description} \to \text{game\_id} \right\} $$
+- Tabela Game_title: R(**game_id**, title, description)
+ $$\Sigma = \left\{ \text{game\_id} \to \text{title},\text{game\_id} \to \text{description},\text{title} + \text{description} \to \text{game\_id} \right\} $$
 
 Każda gra ma zdefinowany tytuł i opis. Może się zdarzyć sytuacja gdzie dwie gry mają ten sam tytuł albo opis. Zakładamy że połączenie tytułu i opisu daje nam jednoznacznie informację o grze.
 
-- Tabela Inventory: R(**item_id**, game_id,type)
+- Tabela Inventory: R(**inventory_id**, game_id,type)
 
-$$ \Sigma = \left\{ \text{item\_id} \to \text{game\_id} , \text{item\_id} \to \text{type} \right\} $$
+$$ \Sigma = \left\{ \text{inventory\_id} \to \text{game\_id} , \text{inventory\_id} \to \text{type} \right\} $$
 
-Item id wyznacza nam jednoznacznie jaka to gra i jakie jest jej przeznaczenie. game_id mówi nam co to za gra, type mówi jakie jest przeznaczenie te gry ( czy na sprzedaż czy na wypożyczenie czy na turniej). Możemy mieć kilka tych samych gier z tym samy lub inny przeznaczeniem, dlatego z game_id i typu nie wynika item_id
+Inventory id wyznacza nam jednoznacznie jaka to gra i jakie jest jej przeznaczenie. game_id mówi nam co to za gra, type mówi jakie jest przeznaczenie te gry ( czy na sprzedaż czy na wypożyczenie czy na turniej). Możemy mieć kilka tych samych gier z tym samy lub inny przeznaczeniem, dlatego z game_id i typu nie wynika inventory_id
 
 
-- Tabela Turnamet_schedule: R(**turnamet_id**, date)
+- Tabela Tournamet_schedule: R(**tournamet_id**, date)
 
-$$ \Sigma = \left\{ \text{turnament\_id} \to \text{date} \right\} $$
+$$ \Sigma = \left\{ \text{tournament\_id} \to \text{date} \right\} $$
 
 Tabela łącząca turniej z jego datą. 
 
-- Tabela Turnaments: R(**turnment_id**, game_id,max_players,entry,reward  )
+- Tabela Tournaments: R(**tournment_id**, game_id,max_players,entry_fee,reward  )
 
-$$ \Sigma = \left\{ \text{turnament\_id} \to \text{game\_id}, \text{turnament\_id} \to \text{max\_players},\text{turnament\_id} \to \text{entry}, \text{turnament\_id} \to \text{reward} \right\} $$
+$$ \Sigma = \left\{ \text{tournament\_id} \to \text{game\_id}, \text{tournament\_id} \to \text{max\_players},\text{tournament\_id} \to \text{entry\_fee}, \text{tournament\_id} \to \text{reward} \right\} $$
 
 Każdy turniej ma określoną gre, ilość graczy, wpisowe oraz nagrodę. Te parametry nie mówią jednoznacznie, który jest to turniej. Zakładamy, że nagroda oraz wpisowe nie wynikają z siebie ani z gry rozgrawanej na turnieju.
 
 
-- Tabela Finace: R(**payment_id** , in/out, vaue, date, name)
-$$ \Sigma = \left\{ \text{payment\_id} \to \text{in/out}, \text{payment\_id} \to \text{value},\text{payment\_id} \to \text{date}, \text{payment\_id} \to \text{name} \right\} $$
+- Tabela Finaces: R(**payment_id** , in_out, value, date, title)
+$$ \Sigma = \left\{ \text{payment\_id} \to \text{in\_out}, \text{payment\_id} \to \text{value},\text{payment\_id} \to \text{date}, \text{payment\_id} \to \text{title} \right\} $$
 
 Każda płatność ma okreśnone czy my płacimy czy nam jest płacone, wartość tej  płatności( wartość absolutna) oraz data płatności. Płatność nie jest jednoznacznie zdefiniowana przez datę , wrtość i czy jest kosztem czy przychodem i nazwę.
 
-- Tabela Payoff: R(**payment_id**, employee_id)
+- Tabela Payoffs: R(**payment_id**, employee_id)
 
 $$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id}  \right\} $$
 
 Każda wypłata jest powiązana z pracownikiem.
 
 
-- Tabela Rental: R(**rental_id**,payment_id,employee_id, customer_id,item_id,rental_date,return_date)
+- Tabela Rentals: R(**rental_id**,payment_id,employee_id, customer_id,inventory_id,rental_date,return_date)
 
-$$ \Sigma = \left\{\text{rental\_id} \to \text{peyment\_id}, \text{rental\_id} \to \text{employee\_id},\text{rental\_id} \to \text{customer\_id},\text{rental\_id} \to \text{item\_id},\text{rental\_id} \to \text{rental\_date},\text{rental\_id} \to \text{return\_date}, \text{item\_id}+ \text{rental\_date} \to \text{rental\_id}   \right\} $$
+$$ \Sigma = \left\{\text{rental\_id} \to \text{peyment\_id}, \text{rental\_id} \to \text{employee\_id},\text{rental\_id} \to \text{customer\_id},\text{rental\_id} \to \text{inventory\_id},\text{rental\_id} \to \text{rental\_date},\text{rental\_id} \to \text{return\_date}, \text{inventory\_id}+ \text{rental\_date} \to \text{rental\_id}   \right\} $$
 
-Każde wypożyczenie jest jednoznacznie związane z przepływem gotówki,pracownikiem, klientem, przedmiotem, datą wyporzyczenia i datą oddania. Wypożyczenie jednoznacznie określa też item_id połączony z rental_date. Jeśli jest gra nie oddana ro payment_id jest pusty tak jak return_date.
+Każde wypożyczenie jest jednoznacznie związane z przepływem gotówki,pracownikiem, klientem, przedmiotem, datą wyporzyczenia i datą oddania. Wypożyczenie jednoznacznie określa też inventory_id połączony z rental_date. Jeśli jest gra nie oddana ro payment_id jest pusty tak jak return_date.
 
 
-- Tabela Sales: R(**payment_id**,employee_id, customer_id,item_id)
+- Tabela Sales: R(**payment_id**,employee_id, customer_id,inventory_id)
 
 $$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id},\text{payment\_id} \to \text{customer\_id},\text{payment\_id} \to \text{game\_id}   \right\} $$
 
