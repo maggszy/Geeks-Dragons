@@ -62,7 +62,7 @@ Baza powinna przynajmniej posiadać informacje o:
 - max players
 - play time
 - min age
-- cena
+- price
 1. Wybieramy losowo X gier z naszego pliku na temat gier i każdemu przypisujemy ID - tylko takie gry bedziemy u siebie mieć.
 
 
@@ -155,13 +155,14 @@ Pomysły dodatkowe finanse:
 
 ### Tabele
 
-- [ ] Pracownicy
+- [x] Pracownicy
+- [x] Klienci
 - [ ] Address
 - [x] Gry
 - [ ] Asortyment/Inventor
-- [ ] Terminarz
-- [ ] Turnieje
-- [ ] Wyniki
+- [x] Terminarz
+- [x] Turnieje
+- [x] Wyniki
 - [ ] Finanse/ pomysły
 - [ ] Wypłaty
 - [ ] Koszty/ przepływy
@@ -179,3 +180,13 @@ Pomysły dodatkowe finanse:
     - nazwiska zagraniczne (https://namecensus.com/last-names/)
     - imiona polskie (https://dane.gov.pl/pl/dataset/219,imiona-nadawane-dzieciom-w-polsce)
     - nazwiska polskie (https://dane.gov.pl/pl/dataset/1681,nazwiska-osob-zyjacych-wystepujace-w-rejestrze-pesel)
+
+
+## Do przemyślenia
+
+- wszystkie telefony w jednej tabeli?
+- miało nie być płci
+- wysymulowany 2022 roku
+- kaucja?
+- return date powinno przyjmowac none
+- na razie jest 7 dni w tygodniu - do zmiany
