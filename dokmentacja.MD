@@ -75,7 +75,7 @@ $$ \Sigma = \left\{ \text{tournament\_id} \to \text{date} \right\} $$
 
 Tabela łącząca turniej z jego datą. 
 
-- Tabela Tournaments: R(**tournment_id**, game_id,max_players,entry_fee,reward )
+- Tabela Tournaments: R(**tournment_id, game_id**,max_players,entry_fee,reward )
 
 $$ \Sigma = \left\{ \text{tournament\_id} \to \text{game\_id}, \text{tournament\_id} \to \text{max\_players},\text{tournament\_id} \to \text{entry\_fee}, \text{tournament\_id} \to \text{reward} \right\} $$
 
