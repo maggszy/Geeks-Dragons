@@ -21,31 +21,27 @@ if __name__ == "__main__":
     names_lists = (eng_first_names, eng_last_names, pl_first_names_w, pl_first_names_m,pl_last_names_w, pl_last_names_m)
 
     games_tbl = generate_games_tbl(new_games_df)
+    tournament_games = random_games(games_tbl)
+
     phone_numbers = generate_ALL_phone_numbers(CUSTOMERS_AMOUNT+EMPLOYEES_AMOUNT)
     customers_tbl = generate_customers_tbl(names_lists, phone_numbers, proportions)
     employees_tbl = generate_employees_tbl(phone_numbers)
-
     termines_tbl = generate_schedule_tbl()
-
-    tournament_games = random_games(games_tbl)
     tournaments_tbl = generate_tournaments_tbl(tournament_games)
-
     results_tbl = generate_results_table(tournaments_tbl, customers_tbl)
-
     rentals_tbl = generate_rentals_tbl(customers_tbl["customer_id"])
-
     last_rent_inventory_id = len(np.unique(rentals_tbl["inventory_id"]))
     sales_tbl = generate_sales_tbl(customers_tbl, last_rent_inventory_id)
 
     temp_rent_pay = temp_rent_payments(rentals_tbl)
     temp_sales_pay = temp_sales_payments(sales_tbl, games_tbl)
     payments_tbl = concat_payments(temp_rent_pay, temp_sales_pay)
-    print(payments_tbl)
 
     temp_rent = temp_rent_invent(rentals_tbl)
     temp_sales =  temp_sales_invent(sales_tbl, last_rent_inventory_id)
     temp_tour =  temp_tour_invent(tournament_games, temp_rent, temp_sales)
     inventory_tbl = generate_inventory_tbl(temp_rent,temp_sales,temp_tour)
+    
     sales_tbl = drop_from_sales(sales_tbl)
     rentals_tbl = drop_from_rentals(rentals_tbl)
 
