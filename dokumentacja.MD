@@ -42,7 +42,7 @@ Klucze główne zaznaczamy przez pogrubienie
 
 
 
-3. Tabela Addresses: R(**adress_id**, country, city, street,number,postal_code)
+3. Tabela Addresses: R(**address_id**, country, city, street,number,postal_code)
 
     - adress_id: numer identyfikacyjny adresu.
     - country: państwo
@@ -85,7 +85,7 @@ Klucze główne zaznaczamy przez pogrubienie
     Inventory id wyznacza nam jednoznacznie jaka to gra i jakie jest jej przeznaczenie. game_id mówi nam co to za gra, type mówi jakie jest przeznaczenie te gry. Możemy mieć kilka tych samych gier z tym samym lub inny przeznaczeniem, dlatego z game_id i typu nie wynika inventory_id.
 
 
-5. Tabela Tournaments: R(**tournament_id**, game_id,max_players,entry_fee,reward )
+6. Tabela Tournaments: R(**tournament_id**, game_id,max_players,entry_fee,reward )
 
     - tournament_id: numer identyfikacyjny turnieju
     - game_id (klucz obcy odwołujący się do tabeli Games): numer identyfikacyjny grę w jaką się gra na turnieju
@@ -97,7 +97,7 @@ Klucze główne zaznaczamy przez pogrubienie
 
     Tournament id  wyznacza jednoznacznie gre, ilość graczy, wpisowe oraz nagrodę w turnieju, odwrotna relacja nie zachodzi. Zakładamy, że nagroda oraz wpisowe bezpośrednio  nie wynikają z siebie ani z gry rozgrywanej na turnieju.
 
-6. Tabela Tournament_schedule: R(**tournament_id**, date)
+7. Tabela Tournament_schedule: R(**tournament_id**, date)
     - tournament_id (klucz obcy odwołujący się do tabeli Tournaments): numer identyfikacyjny turnieju
     - date: data turnieju
 
@@ -105,37 +105,61 @@ Klucze główne zaznaczamy przez pogrubienie
 
     Tabela łącząca turniej z jego datą. W jeden dzień może odbywać się więcej niż 1 turniej
 
-7. Tabela Tournaments_results: R(**tournament_id, place**, customer_id)
+8. Tabela Tournaments_results: R(**tournament_id, place**, customer_id)
     - tournament_id (klucz obcy odwołujący się do tabeli Tournaments): numer identyfikacyjny turnieju
     - place: miejsce zajęte w turnieju przez gracza (klienta)
     - customer_id (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
-
-
     $$ \Sigma = \left\{ \text{tournament\_id} + \text{place} \to \text{client\_id} \right\} $$
 
     Tournament id w połączeniu z place wyznacza nam jednoznacznie osobę, która te miejsce zajęła w turnieju. Zakładamy, że w turniejach nie ma miejsc ex aequo.
 
-- Tabela Finaces: R(**payment_id** , in_out, value, date, title)
-$$ \Sigma = \left\{ \text{payment\_id} \to \text{in\_out}, \text{payment\_id} \to \text{value},\text{payment\_id} \to \text{date}, \text{payment\_id} \to \text{title} \right\} $$
+9. Tabela Finances: R(**payment_id** , in_out, value, date, title)
 
-Każda płatność ma okreśnone czy my płacimy czy nam jest płacone, wartość tej  płatności( wartość absolutna) oraz data płatności. Płatność nie jest jednoznacznie zdefiniowana przez datę , wrtość i czy jest kosztem czy przychodem i nazwę.
+    - payment_id: numer identyfikacyjny płatności
+    - in_out: czy jest to płatność czy przychód
+    - value: wartość płatności
+    - date: data płatności
+    - title: tytuł płatności
 
-- Tabela Payoffs: R(**payment_id**, employee_id)
+    $$ \Sigma = \left\{ \text{payment\_id} \to \text{in\_out}, \text{payment\_id} \to \text{value},\text{payment\_id} \to \text{date}, \text{payment\_id} \to \text{title} \right\} $$
 
-$$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id}  \right\} $$
+    Tylko payment id wyznacza nam jednoznacznie przepływ pieniężny. 
 
-Każda wypłata jest powiązana z pracownikiem.
+10. Tabela Payoffs: R(**payment_id**, employee_id)
+
+    - payment_id (klucz obcy odwołujący się do tabeli Finances): numer identyfikacyjny płatności  
+    - employee_id (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
+    $$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id}  \right\} $$
+    
+    payment id wyznacza nam jednoznacznie przypisanego do tej płatności pracownika. Relacja w drugą stronę nie zachodzi bo pracownik może być przypisany do wielu płatności.
+    
 
 
-- Tabela Rentals: R(**rental_id**,payment_id,employee_id, customer_id,inventory_id,rental_date,return_date)
+11. Tabela Rentals: R(**rental_id**,payment_id,employee_id, customer_id,inventory_id,rental_date,return_date)
 
-$$ \Sigma = \left\{\text{rental\_id} \to \text{peyment\_id}, \text{rental\_id} \to \text{employee\_id},\text{rental\_id} \to \text{customer\_id},\text{rental\_id} \to \text{inventory\_id},\text{rental\_id} \to \text{rental\_date},\text{rental\_id} \to \text{return\_date}, \text{inventory\_id}+ \text{rental\_date} \to \text{rental\_id}   \right\} $$
+    - rental_id: numer identyfikacyjny wypożyczenia
+    - payment_id (klucz obcy odwołujący się do tabeli Finances) : numer identyfikacyjny płatności
+    - employee_id (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
+    - customer_id (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
+    - inventory_id (klucz obcy odwołujący się do tabeli Inventory): numer identyfikacyjny inwentarza
+    - rental_date: data wypożyczenia gry
+    - return_date: data oddania gry
 
-Każde wypożyczenie jest jednoznacznie związane z przepływem gotówki,pracownikiem, klientem, przedmiotem, datą wyporzyczenia i datą oddania. Wypożyczenie jednoznacznie określa też inventory_id połączony z rental_date. Jeśli jest gra nie oddana ro payment_id jest pusty tak jak return_date.
+    $$ \Sigma = \left\{\text{rental\_id} \to \text{payment\_id}, \text{rental\_id} \to \text{employee\_id},\text{rental\_id} \to \text{customer\_id},\text{rental\_id} \to \text{inventory\_id},\text{rental\_id} \to \text{rental\_date},\text{rental\_id} \to \text{return\_date}, \text{payment\_id}} \to \text{rental\_id} \right\} $$
 
+    Rental id jednoznacznie nam wyznacza wypożyczenie, tak jak payment id.
 
-- Tabela Sales: R(**payment_id**,employee_id, customer_id,inventory_id)
+12. Tabela Sales: R(**payment_id**,employee_id, customer_id,inventory_id)
 
+    - payment_id (klucz obcy odwołujący się do tabeli Finances) : numer identyfikacyjny płatności
+    - employee_id (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
+    - customer_id (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
+    - inventory_id (klucz obcy odwołujący się do tabeli Inventory): numer identyfikacyjny inwentarza
+
+    Z payment id wynika jednoznacznie jaka gra została sprzedana przez kogo i komu. Nie ma odwrotnych relacji.
 $$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id},\text{payment\_id} \to \text{customer\_id},\text{payment\_id} \to \text{game\_id}   \right\} $$
 
-Z payment_id wynika pracownik, klient, oraz jaka graa. Nie ma żadnej relacji w drugą stronę.
+
+## Postać normalna bazy danych
+
+Jak możemy zauważyć w naszej bazie danych w każdej tabeli wszystkie nietrywialne relację zaczynają się od nadklucza wię spełnia postać BCNF z czego wynika także że spełnia postać normalną EKNF.
