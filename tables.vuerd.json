@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -831.9999999999984,
-    "scrollLeft": -645.333333333333,
-    "zoomLevel": 0.9,
+    "scrollTop": -759.9999999999999,
+    "scrollLeft": -216.01249999999987,
+    "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -19,7 +19,7 @@
     },
     "database": "MariaDB",
     "databaseName": "",
-    "canvasType": "ERD",
+    "canvasType": "@vuerd/builtin-sql-ddl",
     "language": "GraphQL",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
@@ -43,7 +43,7 @@
   "table": {
     "tables": [
       {
-        "name": "customers",
+        "name": "Customers",
         "comment": "",
         "columns": [
           {
@@ -189,15 +189,15 @@
           "active": false,
           "left": 609.9633,
           "top": 418.9689,
-          "zIndex": 45,
-          "widthName": 61.9599609375,
+          "zIndex": 11,
+          "widthName": 64.84814453125,
           "widthComment": 60
         },
         "visible": true,
         "id": "c00e231c-c01c-4000-973d-c652af5de951"
       },
       {
-        "name": "employees",
+        "name": "Employees",
         "comment": "",
         "columns": [
           {
@@ -249,7 +249,7 @@
           {
             "name": "last_name",
             "comment": "",
-            "dataType": "VARCHAR",
+            "dataType": "VARCHAR(50)",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -264,7 +264,7 @@
               "pfk": false,
               "widthName": 61.97900390625,
               "widthComment": 60,
-              "widthDataType": 64.6005859375,
+              "widthDataType": 87.71875,
               "widthDefault": 60
             },
             "id": "399eb6e0-c889-4840-8d83-b88e703e6d5d"
@@ -301,7 +301,7 @@
               "autoIncrement": false,
               "primaryKey": false,
               "unique": false,
-              "notNull": true
+              "notNull": false
             },
             "ui": {
               "active": false,
@@ -318,7 +318,7 @@
           {
             "name": "email",
             "comment": "",
-            "dataType": "VARCHAR",
+            "dataType": "VARCHAR(45)",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -333,7 +333,7 @@
               "pfk": false,
               "widthName": 60,
               "widthComment": 60,
-              "widthDataType": 64.6005859375,
+              "widthDataType": 87.71875,
               "widthDefault": 60
             },
             "id": "efd21c17-bce3-4504-bea6-f7037b86928d"
@@ -383,21 +383,44 @@
               "widthDefault": 60
             },
             "id": "2dae5807-1fa3-49dc-b7d8-cd56f2ea6c7b"
+          },
+          {
+            "name": "birth_date",
+            "comment": "",
+            "dataType": "DATE",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "b858d877-43d3-4a28-b975-cc971fff2d1f"
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 615.6289,
           "top": 832.188,
-          "zIndex": 40,
-          "widthName": 64.8671875,
+          "zIndex": 61,
+          "widthName": 66.30810546875,
           "widthComment": 60
         },
         "visible": true,
         "id": "c3819b87-2cb3-4f1c-b78c-0736cc14cc46"
       },
       {
-        "name": "addresses",
+        "name": "Addresses",
         "comment": "",
         "columns": [
           {
@@ -543,15 +566,15 @@
           "active": false,
           "left": 75.3711,
           "top": 867.3793,
-          "zIndex": 41,
-          "widthName": 61.97900390625,
+          "zIndex": 10,
+          "widthName": 63.419921875,
           "widthComment": 60
         },
         "visible": true,
         "id": "174e96aa-2fae-40ec-8fa2-c88e0a407e96"
       },
       {
-        "name": "games",
+        "name": "Games",
         "comment": "",
         "columns": [
           {
@@ -626,7 +649,7 @@
           {
             "name": "max_players",
             "comment": "",
-            "dataType": "TINYINT",
+            "dataType": "SMALLINT",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -641,7 +664,7 @@
               "pfk": false,
               "widthName": 75.6962890625,
               "widthComment": 60,
-              "widthDataType": 60,
+              "widthDataType": 65.57177734375,
               "widthDefault": 60
             },
             "id": "9e232fef-2112-45fc-9165-a13a49ee6814"
@@ -741,7 +764,7 @@
           {
             "name": "description",
             "comment": "",
-            "dataType": "VARCHAR(500)",
+            "dataType": "VARCHAR(5000)",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -756,17 +779,40 @@
               "pfk": false,
               "widthName": 64.8671875,
               "widthComment": 60,
-              "widthDataType": 94.94873046875,
+              "widthDataType": 102.1787109375,
               "widthDefault": 60
             },
             "id": "b922b4ec-bc65-45dc-babb-7e19f344efbd"
+          },
+          {
+            "name": "type",
+            "comment": "",
+            "dataType": "VARCHAR(18)",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 87.71875,
+              "widthDefault": 60
+            },
+            "id": "e13d54a8-cd19-492e-9f36-55d6d6d90620"
           }
         ],
         "ui": {
           "active": false,
           "left": 25.0001,
           "top": 36.8887,
-          "zIndex": 2,
+          "zIndex": 20,
           "widthName": 60,
           "widthComment": 60
         },
@@ -774,7 +820,7 @@
         "id": "e2a0295a-a616-4bfd-b36e-aba0fe5fddf6"
       },
       {
-        "name": "inventory",
+        "name": "Inventory",
         "comment": "",
         "columns": [
           {
@@ -851,7 +897,7 @@
           "active": false,
           "left": 612.0719,
           "top": 237.3686,
-          "zIndex": 6,
+          "zIndex": 2,
           "widthName": 60,
           "widthComment": 60
         },
@@ -859,7 +905,7 @@
         "id": "a4c37224-99d8-4ded-9470-10b72f1ccf4c"
       },
       {
-        "name": "tournament_schedule",
+        "name": "Tournament_schedule",
         "comment": "",
         "columns": [
           {
@@ -913,15 +959,15 @@
           "active": false,
           "left": 1458.2209,
           "top": 7.1498,
-          "zIndex": 38,
-          "widthName": 127.02978515625,
+          "zIndex": 3,
+          "widthName": 129.91796875,
           "widthComment": 60
         },
         "visible": true,
         "id": "8ac94480-8bd6-4019-bd6e-49a766080630"
       },
       {
-        "name": "tournaments",
+        "name": "Tournaments",
         "comment": "",
         "columns": [
           {
@@ -1017,7 +1063,7 @@
             "id": "8c0faf37-75d8-46e7-b4d8-622f8889581d"
           },
           {
-            "name": "reward",
+            "name": "prize",
             "comment": "",
             "dataType": "DECIMAL",
             "default": "",
@@ -1044,15 +1090,15 @@
           "active": false,
           "left": 584.2411,
           "top": 19.5562,
-          "zIndex": 1,
-          "widthName": 74.26171875,
+          "zIndex": 22,
+          "widthName": 77.14990234375,
           "widthComment": 60
         },
         "visible": true,
         "id": "4acbd489-7439-4944-8e31-7dd6c5d3f4d4"
       },
       {
-        "name": "tournaments_results",
+        "name": "Tournaments_results",
         "comment": "",
         "columns": [
           {
@@ -1129,15 +1175,15 @@
           "active": false,
           "left": 1445.5179,
           "top": 136.0195,
-          "zIndex": 37,
-          "widthName": 119.78076171875,
+          "zIndex": 36,
+          "widthName": 122.6689453125,
           "widthComment": 60
         },
         "visible": true,
         "id": "a2c5d545-2090-4ed2-92bb-b2c0c76abbb6"
       },
       {
-        "name": "rentals",
+        "name": "Rentals",
         "comment": "",
         "columns": [
           {
@@ -1166,7 +1212,7 @@
           {
             "name": "payment_id",
             "comment": "",
-            "dataType": "SMALLINT",
+            "dataType": "INT",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -1181,7 +1227,7 @@
               "pfk": false,
               "widthName": 69.208984375,
               "widthComment": 60,
-              "widthDataType": 65.57177734375,
+              "widthDataType": 60,
               "widthDefault": 60
             },
             "id": "04f92450-520a-4736-b07e-f057b7dd2e83"
@@ -1306,7 +1352,7 @@
           "active": false,
           "left": 1530.7868,
           "top": 343.1111,
-          "zIndex": 42,
+          "zIndex": 32,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1314,13 +1360,13 @@
         "id": "eed9429a-fc60-4897-b09b-7a102fdbf67f"
       },
       {
-        "name": "finances",
+        "name": "Finances",
         "comment": "",
         "columns": [
           {
             "name": "payment_id",
             "comment": "",
-            "dataType": "SMALLINT",
+            "dataType": "INT",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -1335,7 +1381,7 @@
               "pfk": false,
               "widthName": 69.208984375,
               "widthComment": 60,
-              "widthDataType": 65.57177734375,
+              "widthDataType": 60,
               "widthDefault": 60
             },
             "id": "55c21d97-771e-433b-b092-81c5cbb39045"
@@ -1437,7 +1483,7 @@
           "active": false,
           "left": 1442.1761,
           "top": 862.0005,
-          "zIndex": 39,
+          "zIndex": 6,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1445,13 +1491,13 @@
         "id": "dcd0634f-6803-4a3d-b12e-ff2749649f38"
       },
       {
-        "name": "payoffs",
+        "name": "Payoffs",
         "comment": "",
         "columns": [
           {
             "name": "payment_id",
             "comment": "",
-            "dataType": "SMALLINT",
+            "dataType": "INT",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -1466,7 +1512,7 @@
               "pfk": true,
               "widthName": 69.208984375,
               "widthComment": 60,
-              "widthDataType": 65.57177734375,
+              "widthDataType": 60,
               "widthDefault": 60
             },
             "id": "367cb13d-99fd-4cae-a121-b75ad6ea7181"
@@ -1499,7 +1545,7 @@
           "active": false,
           "left": 623.223,
           "top": 1219.0751,
-          "zIndex": 46,
+          "zIndex": 8,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1507,13 +1553,13 @@
         "id": "22093f28-75d9-4723-ab37-a24c49563af2"
       },
       {
-        "name": "sales",
+        "name": "Sales",
         "comment": "",
         "columns": [
           {
             "name": "payment_id",
             "comment": "",
-            "dataType": "SMALLINT",
+            "dataType": "INT",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -1528,7 +1574,7 @@
               "pfk": true,
               "widthName": 69.208984375,
               "widthComment": 60,
-              "widthDataType": 65.57177734375,
+              "widthDataType": 60,
               "widthDefault": 60
             },
             "id": "bab68d54-7359-4c99-b8fa-7830b0e2ac5b"
@@ -1607,7 +1653,7 @@
           "active": false,
           "left": 1500.0358,
           "top": 1234.4183,
-          "zIndex": 3,
+          "zIndex": 7,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1632,7 +1678,7 @@
             "4597d5dc-28bf-4014-8aae-e71e7ad68a72"
           ],
           "x": 1024.8393492187502,
-          "y": 890.438,
+          "y": 895.563,
           "direction": "right"
         },
         "end": {
@@ -1684,7 +1730,7 @@
             "4597d5dc-28bf-4014-8aae-e71e7ad68a72"
           ],
           "x": 820.234124609375,
-          "y": 1065.188,
+          "y": 1085.688,
           "direction": "bottom"
         },
         "end": {
@@ -1761,8 +1807,8 @@
           "columnIds": [
             "160664a9-1fb6-47fc-9f6a-7ceeba142561"
           ],
-          "x": 424.10508046875,
-          "y": 100.2637,
+          "x": 431.3350609375,
+          "y": 105.3887,
           "direction": "right"
         },
         "end": {
@@ -1865,8 +1911,8 @@
           "columnIds": [
             "160664a9-1fb6-47fc-9f6a-7ceeba142561"
           ],
-          "x": 424.10508046875,
-          "y": 227.0137,
+          "x": 431.3350609375,
+          "y": 242.3887,
           "direction": "right"
         },
         "end": {
@@ -1944,7 +1990,7 @@
             "4597d5dc-28bf-4014-8aae-e71e7ad68a72"
           ],
           "x": 1024.8393492187502,
-          "y": 1006.938,
+          "y": 1022.313,
           "direction": "right"
         },
         "end": {
@@ -2031,7 +2077,7 @@
             "2dae5807-1fa3-49dc-b7d8-cd56f2ea6c7b"
           ],
           "x": 615.6289,
-          "y": 948.688,
+          "y": 958.938,
           "direction": "left"
         },
         "constraintName": "fk_addresses_to_employees",

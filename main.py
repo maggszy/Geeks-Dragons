@@ -1,3 +1,10 @@
+# to do
+# emploees ADDRESS TABLE!
+# emploees: address id
+
+
+
+
 from generate import *
 
 import pandas as pd 
@@ -18,7 +25,7 @@ if __name__ == "__main__":
     customers_tbl = generate_customers_tbl(names_lists, phone_numbers, proportions)
     employees_tbl = generate_employees_tbl(phone_numbers)
 
-    termines_tbl = generate_termines_tbl()
+    termines_tbl = generate_schedule_tbl()
 
     tournament_games = random_games(games_tbl)
     tournaments_tbl = generate_tournaments_tbl(tournament_games)
@@ -29,23 +36,29 @@ if __name__ == "__main__":
 
     last_rent_inventory_id = len(np.unique(rentals_tbl["inventory_id"]))
     sales_tbl = generate_sales_tbl(customers_tbl, last_rent_inventory_id)
-    print(sales_tbl.head())
+
+    temp_rent_pay = temp_rent_payments(rentals_tbl)
+    temp_sales_pay = temp_sales_payments(sales_tbl, games_tbl)
+    payments_tbl = concat_payments(temp_rent_pay, temp_sales_pay)
+    print(payments_tbl)
 
     temp_rent = temp_rent_invent(rentals_tbl)
     temp_sales =  temp_sales_invent(sales_tbl, last_rent_inventory_id)
     temp_tour =  temp_tour_invent(tournament_games, temp_rent, temp_sales)
     inventory_tbl = generate_inventory_tbl(temp_rent,temp_sales,temp_tour)
-
+    sales_tbl = drop_from_sales(sales_tbl)
+    rentals_tbl = drop_from_rentals(rentals_tbl)
 
     engine = create_engine("mysql+pymysql://team02:%s@giniewicz.it:3306/team02" %quote(password))
     connection = engine.connect()
-    games_tbl.to_sql("games", con =  connection, if_exists='replace', index=False)
-    customers_tbl.to_sql("customers", con =  connection, if_exists='replace', index=False)
-    employees_tbl.to_sql("employees", con =  connection, if_exists='replace', index=False)
-    games_tbl.to_sql("games", con =  connection, if_exists='replace', index=False)
-    termines_tbl.to_sql("termines", con =  connection, if_exists='replace', index=False)
-    tournaments_tbl.to_sql("tournaments", con =  connection, if_exists='replace', index=False)
-    results_tbl.to_sql("results", con =  connection, if_exists='replace', index=False)
-    rentals_tbl.to_sql("rentals", con =  connection, if_exists='replace', index=False)
-    sales_tbl.to_sql("sales", con =  connection, if_exists='replace', index=False)
-    inventory_tbl.to_sql("inventory", con =  connection, if_exists='replace', index=False)
+    games_tbl.to_sql("Games", con =  connection, if_exists='append', index=False)
+    customers_tbl.to_sql("Customers", con =  connection, if_exists='append', index=False)
+    employees_tbl.to_sql("Employees", con =  connection, if_exists='append', index=False)
+    termines_tbl.to_sql("Tournament_schedule", con =  connection, if_exists='append', index=False)
+    tournaments_tbl.to_sql("Tournaments", con =  connection, if_exists='append', index=False)
+    results_tbl.to_sql("Tournaments_results", con =  connection, if_exists='append', index=False)
+    rentals_tbl.to_sql("Rentals", con =  connection, if_exists='append', index=False)
+    sales_tbl.to_sql("Sales", con =  connection, if_exists='append', index=False)
+    inventory_tbl.to_sql("Inventory", con =  connection, if_exists='append', index=False)
+    payments_tbl.to_sql("Finances", con =  connection, if_exists='replace', index=False)
+    connection.close()
