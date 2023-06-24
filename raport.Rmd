@@ -1,0 +1,93 @@
+---
+title: "Raport „Geeks & Dragons”"
+author: 'Urszula Spik, Natalia Jelito, Maciej Karczewski, Magdalena Szymkowiak'
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(RMariaDB)
+library(ggplot2)
+library(dplyr)
+library(dbplyr)
+library(tidyr)
+library(kableExtra)
+library(emojifont)
+library(stringr)
+```
+
+```{r, echo=F, include=F}
+color1<-"#00BFC4"
+color2<- "#7CAE00"
+color3<-"#C77CEE"
+
+con <- dbConnect(RMariaDB::MariaDB(),
+                dbname = 'team02',
+                username = 'team02',
+                password = "te@m0z",
+                host = "giniewicz.it")
+```
+
+# Ranking na pracownika miesiąca
+
+Pracownikiem miesiąca zostaje ten, kto w danym miesiącu sprzedał bądź wynajął największą liczbę gier.
+
+```{r, echo = F}
+rental_info = 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, CONCAT(MONTH(rental_date), ".", YEAR(rental_date)) AS month_date
+FROM Employees
+INNER JOIN Rentals USING (employee_id)
+GROUP BY month_date, employee_id'
+
+sales_info = 'SELECT employee_id, COUNT(*) AS num_sold, CONCAT(first_name, " ", last_name) AS employee, MONTH(date) as month, YEAR(date) as year, CONCAT(MONTH(date), ".", YEAR(date)) AS month_date
+FROM Employees
+INNER JOIN Sales USING (employee_id)
+INNER JOIN Finances USING(payment_id)
+GROUP BY month_date, employee_id'
+
+rental_df <- dbGetQuery(con, rental_info)
+sales_df <- dbGetQuery(con, sales_info)
+```
+
+
+```{r, echo = F}
+best_employee <-  rental_df %>% full_join(sales_df, by = c("employee_id", "month_date", "year", "month", "employee"))
+```
+
+```{r, echo = F}
+best_employee[is.na(best_employee)] <- 0
+
+best_employee <- best_employee %>%
+  mutate(total_num = num_rented+num_sold) %>% #+num_sold
+  mutate(employee=str_to_title(employee)) %>%
+  arrange(employee)%>%
+  group_by(month_date) %>%
+  arrange(desc(total_num), .by_group=TRUE)%>%
+  mutate(place = rank(-total_num,ties.method="min"))%>%
+  arrange(year, month, month_date)
+```
+
+```{r, echo=F}
+best_three <- best_employee %>% filter(place %in% c(1,2,3)) %>% select(month_date, employee, place)%>% pivot_wider(names_from = place, values_from = employee,values_fn = list)
+
+best_three <- as.data.frame(best_three)
+best_three[best_three=="NULL"] <- '-'
+
+kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach")%>%
+  column_spec(2:4, width = "10em")%>%kable_styling(latex_options = c("striped", "HOLD_position"))%>%row_spec(0, bold=T)
+```
+
+```{r, echo=F}
+best_empl_res<-best_employee%>%filter(place %in% c(1,2,3))%>%select(total_num, month_date, place)%>%distinct()
+
+best_empl_res$month_date<-factor(best_empl_res$month_date,levels=unique(best_empl_res$month_date))
+
+ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place))) + geom_col() +labs(title = "Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca", x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+
+# Top 10 zawodników turniejowych
+
+```{r}
+```
+
