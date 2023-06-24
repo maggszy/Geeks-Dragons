@@ -166,8 +166,8 @@ Pomysły dodatkowe finanse:
 - [ ] Finanse/ pomysły
 - [ ] Wypłaty
 - [ ] Koszty/ przepływy
-- [ ] Wypożyczenia
-- [ ] Sprzedaż
+- [x] Wypożyczenia
+- [x] Sprzedaż
 
 
 ## Linki
@@ -188,5 +188,10 @@ Pomysły dodatkowe finanse:
 - miało nie być płci
 - wysymulowany 2022 roku
 - kaucja?
-- return date powinno przyjmowac none
-- na razie jest 7 dni w tygodniu - do zmiany
++ return date powinno przyjmowac none
++ na razie jest 7 dni w tygodniu - do zmiany -> jednak git
+- ceny z rozkładu bardziej dzwonowateo
+- lista turniejowych gier
+- min age sprawdzać? -> losujemy tylko dorosłych xd
+
+
