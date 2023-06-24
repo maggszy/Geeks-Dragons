@@ -82,5 +82,5 @@ ORDER BY avg_day_num DESC;
 SELECT Customers.customer_id, CONCAT(Customers.first_name, " ", Customers.last_name) AS customer_name , DATEDIFF(Rentals.return_date, Rentals.rental_date) AS day_num
 FROM Rentals
 INNER JOIN Inventory USING(inventory_id)
-INNER JOIN Customers USING(customer_id)
+INNER JOIN Customers USING(customer_id) 
 ORDER BY day_num DESC;
