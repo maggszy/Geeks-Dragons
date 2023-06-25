@@ -1,0 +1,252 @@
+---
+title: "Raport „Geeks & Dragons”"
+author: 'Urszula Spik, Natalia Jelito, Maciej Karczewski, Magdalena Szymkowiak'
+date: '`r format(Sys.Date(), "%d.%m.%Y")`'
+output: 
+  html_document:
+    number_sections: true
+---
+
+\renewcommand{\figurename}{Wykres}
+\renewcommand{\tablename}{Tabela}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.pos="H",out.width = "85%", fig.align = 'center')
+library(RMariaDB)
+library(ggplot2)
+library(dplyr)
+library(dbplyr)
+library(tidyr)
+library(kableExtra)
+library(emojifont)
+library(plotly)
+library(stringr)
+library(colorspace)
+```
+
+```{r, echo=F, include=F}
+color1<-"#00BFC4"
+color2<- "#7CAE00"
+color3<-"#C77CEE"
+color4<- "#D9EDEE"
+
+con <- dbConnect(RMariaDB::MariaDB(),
+                dbname = 'team02',
+                username = 'team02',
+                password = "te@m0z",
+                host = "giniewicz.it")
+```
+
+# Ranking na pracownika miesiąca
+
+Ranking na pracownika miesiąca polega na wyłonieniu pracownika, który w danym miesiącu sprzedał bądź wynajął największą liczbę gier. W przypadku remisu pracownikiem miesiąca decydującym czynnikiem jest liczba sprzedanych gier.
+
+```{r, echo = F}
+rental_info <- 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, CONCAT(MONTH(rental_date), ".", YEAR(rental_date)) AS month_date
+FROM Employees
+INNER JOIN Rentals USING (employee_id)
+GROUP BY month_date, employee_id'
+
+sales_info <- 'SELECT employee_id, COUNT(*) AS num_sold, CONCAT(first_name, " ", last_name) AS employee, MONTH(date) as month, YEAR(date) as year, CONCAT(MONTH(date), ".", YEAR(date)) AS month_date
+FROM Employees
+INNER JOIN Sales USING (employee_id)
+INNER JOIN Finances USING(payment_id)
+GROUP BY month_date, employee_id'
+
+rental_df <- dbGetQuery(con, rental_info)
+sales_df <- dbGetQuery(con, sales_info)
+```
+
+
+```{r, echo = F}
+best_employee <-  rental_df %>% full_join(sales_df, by = c("employee_id", "month_date", "year", "month", "employee"))
+
+best_employee[is.na(best_employee)] <- 0
+
+best_employee <- best_employee %>%
+  mutate(total_num = num_rented+num_sold) %>%
+  mutate(employee=str_to_title(employee)) %>%
+  arrange(employee)%>%
+  group_by(month_date) %>%
+  arrange(desc(total_num), .by_group=TRUE)%>%
+  mutate(place = rank(-total_num, ties.method="min")) %>%
+  arrange(desc(year), desc(month))
+
+same_place <- best_employee %>%
+  group_by(month_date, place) %>%
+  mutate(place_sales = rank(-num_sold, ties.method="min"))%>%
+  select(employee_id,month_date, place_sales, place)
+
+best_employee <- best_employee %>% left_join(same_place, by=c("employee_id","month_date", "place"))%>% mutate(place_end=place+place_sales-1)
+```
+
+```{r, echo=F}
+best_three <- best_employee %>% filter(place_end %in% c(1,2,3)) %>% select(month_date, employee, place_end)%>% pivot_wider(names_from = place_end, values_from = employee,values_fn = list)
+
+best_three <- as.data.frame(best_three)
+best_three[best_three=="NULL"] <- '-'
+
+kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach.")%>%
+  column_spec(1:4, width = "10em")%>%kable_styling(latex_options = c("HOLD_position"))%>%row_spec(0, bold=T, background=color4)
+```
+
+```{r, echo=F, fig.cap="Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca w ostatnich 12 miesiącach."}
+best_empl_res<-best_employee%>%arrange(year, month)%>%filter(place_end %in% c(1,2,3))%>%select(total_num, month_date, place_end)%>%distinct()%>%tail(12*3)
+
+best_empl_res$month_date<-factor(best_empl_res$month_date,levels=unique(best_empl_res$month_date))
+
+best_empl_plot<-ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place_end))) + geom_col() +labs(x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))+
+  geom_text(aes(label = as.integer(total_num)), size = 3,position = position_stack(vjust = 0.5), color="#E8E8E8")
+
+ggplotly(best_empl_plot)
+```
+
+```{r,echo=F}
+month_now <- best_three$month_date[1]
+best_empl_now <- best_three$`1`[1]
+best_empl_now_res <- best_employee%>%filter(month_date==month_now & place_end==1)
+```
+
+Aktualnie pracownikiem miesiąca (`r month_now`) jest **`r best_empl_now`**. Tytuł ten otrzymuje dzięki sprzedaży `r as.integer(best_empl_now_res$num_sold[1])` gier i `r as.integer(best_empl_now_res$num_rented[1])` wypożyczeniom, co sumarycznie daje mu wynik **`r as.integer(best_empl_now_res$total_num[1])`** gier.
+
+# Top 10 zawodników turniejowych
+
+```{r, echo=F}
+tournaments <- 'SELECT tournament_id,title, place, CONCAT(first_name, " ", last_name) AS customer_name FROM Tournaments_results INNER JOIN Customers USING(customer_id) INNER JOIN Tournaments USING(tournament_id) INNER JOIN Games USING(game_id)'
+
+tournaments_df <- dbGetQuery(con, tournaments)
+```
+
+```{r, echo=F}
+tournaments_num <- tournaments_df %>% select(title, tournament_id)%>%distinct()%>%group_by(title) %>% summarise(num=n())
+```
+
+Sklep przeprowadził turnieje w następujących grach: `r unique(tournaments_df$title)`. W sumie odbyło się **`r sum(tournaments_num$num)`** turniejów.
+
+```{r,echo=F, fig.cap="Liczba rozegranych turniejów w zależności od gry."}
+tournament_num_plot<-ggplot(tournaments_num, aes(title, num))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba turniejów")+coord_flip()
+
+ggplotly(tournament_num_plot)
+```
+
+```{r, echo=F, message=F}
+best_players<-tournaments_df %>% group_by(tournament_id) %>% mutate(points=100-place+1)%>%group_by(title, customer_name)%>%mutate(suma=sum(points))%>%ungroup()%>%select(title, customer_name, suma)%>%distinct()%>%group_by(title)%>%arrange(desc(suma), .by_group = T)%>%top_n(10)%>%mutate(Miejsce=rank(-suma,ties.method="min"))
+```
+```{r, echo=F}
+top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(names_from=title, values_from=customer_name,values_fn = list(customer_name = ~paste(., collapse = ", ")))
+
+top_10[is.na(top_10)] <- '-'
+
+
+kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(1:6, width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T,background=color4)
+```
+
+# Rankingi popularności
+
+## Najczęściej wypożyczane gry
+
+```{r, echo=F}
+pop_rent <- 'SELECT Games.game_id, Games.title, COUNT(*) AS game_num
+FROM Rentals
+INNER JOIN Inventory USING(inventory_id)
+INNER JOIN Games USING(game_id)
+GROUP BY Games.game_id
+ORDER BY game_num DESC, title;'
+
+pop_rent_df <- dbGetQuery(con, pop_rent)
+```
+
+```{r, echo=F}
+pop_rent_plot<-ggplot(pop_rent_df %>% head(10), aes(x=factor(title, levels=title), y=as.integer(game_num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba wypożyczeń")+coord_flip()
+
+ggplotly(pop_rent_plot)
+```
+
+```{r, echo=FALSE}
+rent_pop_max <- head(pop_rent_df,1)$game_num
+rent_pop_max_df <- pop_rent_df %>%filter(game_num==rent_pop_max)
+```
+
+Najczęściej wypożyczana gra to **`r rent_pop_max_df$title`**, została wypożyczona **`r as.integer(rent_pop_max)`** razy.
+
+## Najczęściej kupowane gry
+
+```{r, echo=F}
+pop_sales <- 'SELECT Games.game_id, Games.title, COUNT(*) AS game_num
+FROM Sales
+INNER JOIN Inventory USING(inventory_id)
+INNER JOIN Games USING(game_id)
+GROUP BY Games.game_id
+ORDER BY game_num DESC, title'
+
+pop_sales_df <- dbGetQuery(con, pop_sales)
+```
+
+```{r, echo=F}
+pop_sales_plot<-ggplot(pop_sales_df %>% head(10), aes(x=factor(title, levels=title), y=as.integer(game_num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba sprzedanych")+coord_flip()
+
+ggplotly(pop_sales_plot)
+```
+
+```{r, echo=FALSE}
+sale_pop_max <- head(pop_sales_df,1)$game_num
+sale_pop_max_df <- pop_sales_df %>%filter(game_num==sale_pop_max)
+```
+
+Najczęściej wypożyczana gra to **`r sale_pop_max_df$title`**, została wypożyczona **`r as.integer(sale_pop_max)`** razy.
+
+# Rankingi przetrzymywań
+
+```{r, echo=F}
+keep_games<-'SELECT Rentals.rental_id,Games.game_id, Customers.customer_id, CONCAT(Customers.first_name, " ", Customers.last_name) as customer_name, Games.title, Rentals.rental_date, Rentals.return_date, DATEDIFF(Rentals.return_date, Rentals.rental_date) AS day_num
+FROM Rentals
+INNER JOIN Inventory USING(inventory_id)
+INNER JOIN Games USING(game_id)
+INNER JOIN Customers USING(customer_id)
+ORDER BY day_num DESC, rental_date DESC, Games.title'
+
+keep_games_df <- dbGetQuery(con, keep_games)
+```
+
+Aktualnie jest **`r keep_games_df%>%filter(is.na(return_date))%>%count()`** wypożyczonych gier.
+
+## Najdłużejsze przetrzymywania
+
+```{r, echo=F, fig.cap="Najdłużej przetrzymywane gry w historii sklepu."}
+day_num_max <- head(keep_games_df,1)$day_num
+rental_id_max <- keep_games_df%>%filter(day_num==day_num_max)
+
+rental_keep_plot<-ggplot(keep_games_df%>%head(10), aes(title, day_num, fill=factor(ifelse(rental_id %in%rental_id_max$rental_id,"Maksimum","Pozostałe"))))+
+  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1))+theme(legend.position = "none")+labs(x ="Nazwa gry", y = "Ilość dni")+coord_flip()
+
+ggplotly(rental_keep_plot)
+```
+
+```{r, echo=F}
+keep_games_table<- keep_games_df%>%head(10)%>%select(title, customer_name, rental_date, day_num)%>%mutate(rental_date=format(rental_date, "%d.%m.%Y"))
+
+kable(keep_games_table, col.names=c("Tytuł gry","Klient","Data wypożyczenia","Długość wypożyczenia"), caption="Najdłużej przetrzymywane gry w historii sklepu wraz z datami wypożyczenia.")%>%column_spec(1:2, width = "11em")%>%column_spec(3:4, width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center")%>%row_spec(0, bold=T, background=color4)
+```
+
+Największa liczba dni przez które była przetrzymywana gra to **`r day_num_max`**. Taki wynik został osiągnięty przy wypożyczeniu **`r rental_id_max$title`** przez **`r rental_id_max$customer_name`**.
+
+## Średnia długość wypożyczenia w zależności od gry
+
+Gry są średnio przetrzymywane **`r  round(mean(keep_games_df$day_num, na.rm=T),3)`** dni. Ochylenie standardowe wynosi **`r  round(sd(keep_games_df$day_num, na.rm=T),3)`** dni.
+
+```{r echo=FALSE}
+mean_keep_games <- keep_games_df %>% group_by(title) %>% summarise(mean_time=mean(day_num, na.rm=T)) %>% arrange(desc(mean_time), title)
+```
+
+```{r, echo=F, fig.cap="Średnie przetrzymywanie w zależności od gry.", out.width="100%"}
+mean_keep_plot<-ggplot(mean_keep_games%>%head(10), aes(factor(title, levels=title), mean_time)) + geom_col(fill=color1)+labs(x ="Nazwa gry", y = "Średnia ilość dni")+coord_flip()
+
+ggplotly(mean_keep_plot)
+```
+
+```{r, echo=F}
+mean_max <- mean_keep_games$mean_time[1]
+mean_max_game <- mean_keep_games%>%filter(mean_time==mean_max)
+```
+
+Najdłuższy średni czas przetrzymywania to **`r round(mean_max, 3)`** uzyskany przez **`r mean_max_game$title`**.
