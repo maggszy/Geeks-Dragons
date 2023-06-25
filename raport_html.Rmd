@@ -95,10 +95,9 @@ best_empl_res<-best_employee%>%arrange(year, month)%>%filter(place_end %in% c(1,
 
 best_empl_res$month_date<-factor(best_empl_res$month_date,levels=unique(best_empl_res$month_date))
 
-best_empl_plot<-ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place_end))) + geom_col() +labs(x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))+
-  geom_text(aes(label = as.integer(total_num)), size = 3,position = position_stack(vjust = 0.5), color="#E8E8E8")
+best_empl_plot<-ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place_end), text=str_c('Miesiąc: ', month_date, '<br>Ilość gier: ', as.integer(total_num), '<br>Miejsce: ', as.factor(place_end)))) + geom_col() +labs(x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))
 
-ggplotly(best_empl_plot)
+ggplotly(best_empl_plot, tooltip="text")
 ```
 
 ```{r,echo=F}
@@ -124,9 +123,9 @@ tournaments_num <- tournaments_df %>% select(title, tournament_id)%>%distinct()%
 Sklep przeprowadził turnieje w następujących grach: `r unique(tournaments_df$title)`. W sumie odbyło się **`r sum(tournaments_num$num)`** turniejów.
 
 ```{r,echo=F, fig.cap="Liczba rozegranych turniejów w zależności od gry."}
-tournament_num_plot<-ggplot(tournaments_num, aes(title, num))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba turniejów")+coord_flip()
+tournament_num_plot<-ggplot(tournaments_num, aes(title, num,text=str_c('Tytuł gry: ', title, '<br>Liczba turniejów: ', num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba turniejów")+coord_flip()
 
-ggplotly(tournament_num_plot)
+ggplotly(tournament_num_plot, tooltip="text")
 ```
 
 ```{r, echo=F, message=F}
@@ -137,8 +136,9 @@ top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(name
 
 top_10[is.na(top_10)] <- '-'
 
+tournament_unique_num <- length(unique(tournaments_df$title))
 
-kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(1:6, width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T,background=color4)
+kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(1:(tournament_unique_num+1), width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T,background=color4)
 ```
 
 # Rankingi popularności
@@ -157,9 +157,9 @@ pop_rent_df <- dbGetQuery(con, pop_rent)
 ```
 
 ```{r, echo=F}
-pop_rent_plot<-ggplot(pop_rent_df %>% head(10), aes(x=factor(title, levels=title), y=as.integer(game_num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba wypożyczeń")+coord_flip()
+pop_rent_plot<-ggplot(pop_rent_df %>% head(10), aes(x=factor(title, levels=title), y=as.integer(game_num),text=str_c('Tytuł gry: ', factor(title, levels=title), '<br>Liczba wypożyczeń: ', as.integer(game_num))))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba wypożyczeń")+coord_flip()
 
-ggplotly(pop_rent_plot)
+ggplotly(pop_rent_plot, tooltip = "text")
 ```
 
 ```{r, echo=FALSE}
@@ -183,9 +183,9 @@ pop_sales_df <- dbGetQuery(con, pop_sales)
 ```
 
 ```{r, echo=F}
-pop_sales_plot<-ggplot(pop_sales_df %>% head(10), aes(x=factor(title, levels=title), y=as.integer(game_num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba sprzedanych")+coord_flip()
+pop_sales_plot<-ggplot(pop_sales_df %>% head(10), aes(x=factor(title, levels=title), y=as.integer(game_num),text=str_c('Tytuł gry: ', factor(title, levels=title), '<br>Liczba wypożyczeń: ', as.integer(game_num))))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba sprzedanych")+coord_flip()
 
-ggplotly(pop_sales_plot)
+ggplotly(pop_sales_plot, tooltip = "text")
 ```
 
 ```{r, echo=FALSE}
@@ -216,10 +216,10 @@ Aktualnie jest **`r keep_games_df%>%filter(is.na(return_date))%>%count()`** wypo
 day_num_max <- head(keep_games_df,1)$day_num
 rental_id_max <- keep_games_df%>%filter(day_num==day_num_max)
 
-rental_keep_plot<-ggplot(keep_games_df%>%head(10), aes(title, day_num, fill=factor(ifelse(rental_id %in%rental_id_max$rental_id,"Maksimum","Pozostałe"))))+
-  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1))+theme(legend.position = "none")+labs(x ="Nazwa gry", y = "Ilość dni")+coord_flip()
+rental_keep_plot<-ggplot(keep_games_df%>%head(10), aes(title, day_num, fill=factor(ifelse(rental_id %in%rental_id_max$rental_id,"Maksimum","Pozostałe")),text=str_c('Tytuł gry: ', title, '<br>Ilość dni: ', day_num)))+
+  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1))+theme(legend.position = "none")+labs(x ="Tytuł gry", y = "Ilość dni")+coord_flip()
 
-ggplotly(rental_keep_plot)
+ggplotly(rental_keep_plot, tooltip="text")
 ```
 
 ```{r, echo=F}
@@ -239,9 +239,9 @@ mean_keep_games <- keep_games_df %>% group_by(title) %>% summarise(mean_time=mea
 ```
 
 ```{r, echo=F, fig.cap="Średnie przetrzymywanie w zależności od gry.", out.width="100%"}
-mean_keep_plot<-ggplot(mean_keep_games%>%head(10), aes(factor(title, levels=title), mean_time)) + geom_col(fill=color1)+labs(x ="Nazwa gry", y = "Średnia ilość dni")+coord_flip()
+mean_keep_plot<-ggplot(mean_keep_games%>%head(10), aes(factor(title, levels=title), mean_time, text=str_c('Tytuł gry: ', factor(title, levels=title), '<br>Średnia ilość dni: ', round(mean_time,3)))) + geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Średnia ilość dni")+coord_flip()
 
-ggplotly(mean_keep_plot)
+ggplotly(mean_keep_plot, tooltip = "text")
 ```
 
 ```{r, echo=F}
