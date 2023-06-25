@@ -132,7 +132,9 @@ top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(name
 
 top_10[is.na(top_10)] <- '-'
 
-kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(2:6, width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T,background=color4)
+tournament_unique_num <- length(unique(tournaments_df$title))
+
+kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(2:(tournament_unique_num+1), width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T,background=color4)
 ```
 
 # Rankingi popularności
@@ -207,7 +209,7 @@ day_num_max <- head(keep_games_df,1)$day_num
 rental_id_max <- keep_games_df%>%filter(day_num==day_num_max)
 
 ggplot(keep_games_df%>%head(10), aes(title, day_num, fill=factor(ifelse(rental_id %in%rental_id_max$rental_id,"Maksimum","Pozostałe"))))+
-  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1))+theme(legend.position = "none")+labs(x ="Nazwa gry", y = "Ilość dni")+coord_flip()
+  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1))+theme(legend.position = "none")+labs(x ="Tytuł gry", y = "Ilość dni")+coord_flip()
 ```
 
 ```{r, echo=F}
@@ -227,7 +229,7 @@ mean_keep_games <- keep_games_df %>% group_by(title) %>% summarise(mean_time=mea
 ```
 
 ```{r, echo=F, fig.cap="Średnie przetrzymywanie w zależności od gry.", out.width="100%"}
-ggplot(mean_keep_games%>%head(10), aes(factor(title, levels=title), mean_time)) + geom_col(fill=color1)+labs(x ="Nazwa gry", y = "Średnia ilość dni")+coord_flip()
+ggplot(mean_keep_games%>%head(10), aes(factor(title, levels=title), mean_time)) + geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Średnia ilość dni")+coord_flip()
 ```
 
 ```{r, echo=F}
