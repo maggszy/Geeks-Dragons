@@ -9,7 +9,7 @@ output: pdf_document
 \renewcommand{\tablename}{Tabela}
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.pos="H",out.width = "80%", fig.align = 'center')
+knitr::opts_chunk$set(echo = TRUE, fig.pos="H",out.width = "75%", fig.align = 'center')
 library(RMariaDB)
 library(ggplot2)
 library(dplyr)
@@ -18,12 +18,14 @@ library(tidyr)
 library(kableExtra)
 library(emojifont)
 library(stringr)
+library(colorspace)
 ```
 
 ```{r, echo=F, include=F}
 color1<-"#00BFC4"
 color2<- "#7CAE00"
 color3<-"#C77CEE"
+color4<- "#D9EDEE"
 
 con <- dbConnect(RMariaDB::MariaDB(),
                 dbname = 'team02',
@@ -37,12 +39,12 @@ con <- dbConnect(RMariaDB::MariaDB(),
 Ranking na pracownika miesiąca polega na wyłonieniu pracownika, który w danym miesiącu sprzedał bądź wynajął największą liczbę gier. W przypadku remisu pracownikiem miesiąca decydującym czynnikiem jest liczba sprzedanych gier.
 
 ```{r, echo = F}
-rental_info = 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, CONCAT(MONTH(rental_date), ".", YEAR(rental_date)) AS month_date
+rental_info <- 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, CONCAT(MONTH(rental_date), ".", YEAR(rental_date)) AS month_date
 FROM Employees
 INNER JOIN Rentals USING (employee_id)
 GROUP BY month_date, employee_id'
 
-sales_info = 'SELECT employee_id, COUNT(*) AS num_sold, CONCAT(first_name, " ", last_name) AS employee, MONTH(date) as month, YEAR(date) as year, CONCAT(MONTH(date), ".", YEAR(date)) AS month_date
+sales_info <- 'SELECT employee_id, COUNT(*) AS num_sold, CONCAT(first_name, " ", last_name) AS employee, MONTH(date) as month, YEAR(date) as year, CONCAT(MONTH(date), ".", YEAR(date)) AS month_date
 FROM Employees
 INNER JOIN Sales USING (employee_id)
 INNER JOIN Finances USING(payment_id)
@@ -82,26 +84,51 @@ best_three <- as.data.frame(best_three)
 best_three[best_three=="NULL"] <- '-'
 
 kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach.")%>%
-  column_spec(2:4, width = "10em")%>%kable_styling(latex_options = c("HOLD_position"))%>%row_spec(0, bold=T)
+  column_spec(2:4, width = "10em")%>%kable_styling(latex_options = c("HOLD_position"))%>%row_spec(0, bold=T, background=color4)
 ```
 
-```{r, echo=F, fig.cap="Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca."}
-best_empl_res<-best_employee%>%arrange(year, month)%>%filter(place %in% c(1,2,3))%>%select(total_num, month_date, place)%>%distinct()
+```{r, echo=F, fig.cap="Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca w ostatnich 12 miesiącach."}
+best_empl_res<-best_employee%>%arrange(year, month)%>%filter(place_end %in% c(1,2,3))%>%select(total_num, month_date, place_end)%>%distinct()%>%tail(12*3)
 
 best_empl_res$month_date<-factor(best_empl_res$month_date,levels=unique(best_empl_res$month_date))
 
-ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place))) + geom_col() +labs(x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))
+ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place_end))) + geom_col() +labs(x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))+
+  geom_text(aes(label = as.integer(total_num)), size = 4,position = position_stack(vjust = 0.5), color="#E8E8E8")
 ```
+
 ```{r,echo=F}
 month_now <- best_three$month_date[1]
 best_empl_now <- best_three$`1`[1]
 best_empl_now_res <- best_employee%>%filter(month_date==month_now & place_end==1)
 ```
 
-Aktualnie pracownikiem miesiąca (`r month_now`) jest `r best_empl_now`. Tytuł ten otrzymuje dzięki sprzedaży `r as.integer(best_empl_now_res$num_sold[1])` gier i `r as.integer(best_empl_now_res$num_rented[1])` wypożyczeniom, co sumarycznie daje mu wynik `r as.integer(best_empl_now_res$total_num[1])` gry.
+Aktualnie pracownikiem miesiąca (`r month_now`) jest `r best_empl_now`. Tytuł ten otrzymuje dzięki sprzedaży `r as.integer(best_empl_now_res$num_sold[1])` gier i `r as.integer(best_empl_now_res$num_rented[1])` wypożyczeniom, co sumarycznie daje mu wynik `r as.integer(best_empl_now_res$total_num[1])` gier.
 
 # Top 10 zawodników turniejowych
 
-```{r}
+```{r, echo=F}
+tournaments <- 'SELECT tournament_id,title, place, CONCAT(first_name, " ", last_name) AS customer_name FROM Tournaments_results INNER JOIN Customers USING(customer_id) INNER JOIN Tournaments USING(tournament_id) INNER JOIN Games USING(game_id)'
+
+tournaments_df <- dbGetQuery(con, tournaments)
 ```
 
+```{r, echo=F}
+tournaments_num <- tournaments_df %>% select(title, tournament_id)%>%distinct()%>%group_by(title) %>% summarise(num=n())
+```
+
+Sklep przeprowadził turnieje w następujących grach: `r unique(tournaments_df$title)`. W sumie odbyło się `r sum(tournaments_num$num)` turniejów.
+
+```{r,echo=F, fig.cap="Liczba rozegranych turniejów w zależności od gry.", out.width = "65%"}
+ggplot(tournaments_num, aes(title, num))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba turniejów")+scale_x_discrete(guide = guide_axis(angle = 15))
+```
+
+```{r, echo=F, message=F}
+best_players<-tournaments_df %>% group_by(tournament_id) %>% mutate(points=100-place+1)%>%group_by(title, customer_name)%>%mutate(suma=sum(points))%>%ungroup()%>%select(title, customer_name, suma)%>%distinct()%>%group_by(title)%>%arrange(desc(suma), .by_group = T)%>%top_n(10)%>%mutate(Miejsce=rank(-suma,ties.method="min"))
+```
+```{r, echo=F}
+top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(names_from=title, values_from=customer_name,values_fn = list(customer_name = ~paste(., collapse = ", ")))
+
+top_10[is.na(top_10)] <- '-'
+
+kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(2:6, width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T)
+```
