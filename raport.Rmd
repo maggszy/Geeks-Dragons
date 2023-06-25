@@ -5,8 +5,11 @@ date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
+\renewcommand{\figurename}{Wykres}
+\renewcommand{\tablename}{Tabela}
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.pos="H",out.width = "80%", fig.align = 'center')
 library(RMariaDB)
 library(ggplot2)
 library(dplyr)
@@ -31,7 +34,7 @@ con <- dbConnect(RMariaDB::MariaDB(),
 
 # Ranking na pracownika miesiąca
 
-Pracownikiem miesiąca zostaje ten, kto w danym miesiącu sprzedał bądź wynajął największą liczbę gier.
+Ranking na pracownika miesiąca polega na wyłonieniu pracownika, który w danym miesiącu sprzedał bądź wynajął największą liczbę gier. W przypadku remisu pracownikiem miesiąca decydującym czynnikiem jest liczba sprzedanych gier.
 
 ```{r, echo = F}
 rental_info = 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, CONCAT(MONTH(rental_date), ".", YEAR(rental_date)) AS month_date
@@ -52,39 +55,50 @@ sales_df <- dbGetQuery(con, sales_info)
 
 ```{r, echo = F}
 best_employee <-  rental_df %>% full_join(sales_df, by = c("employee_id", "month_date", "year", "month", "employee"))
-```
 
-```{r, echo = F}
 best_employee[is.na(best_employee)] <- 0
 
 best_employee <- best_employee %>%
-  mutate(total_num = num_rented+num_sold) %>% #+num_sold
+  mutate(total_num = num_rented+num_sold) %>%
   mutate(employee=str_to_title(employee)) %>%
   arrange(employee)%>%
   group_by(month_date) %>%
   arrange(desc(total_num), .by_group=TRUE)%>%
-  mutate(place = rank(-total_num,ties.method="min"))%>%
-  arrange(year, month, month_date)
+  mutate(place = rank(-total_num, ties.method="min")) %>%
+  arrange(desc(year), desc(month))
+
+same_place <- best_employee %>%
+  group_by(month_date, place) %>%
+  mutate(place_sales = rank(-num_sold, ties.method="min"))%>%
+  select(employee_id,month_date, place_sales, place)
+
+best_employee <- best_employee %>% left_join(same_place, by=c("employee_id","month_date", "place"))%>% mutate(place_end=place+place_sales-1)
 ```
 
 ```{r, echo=F}
-best_three <- best_employee %>% filter(place %in% c(1,2,3)) %>% select(month_date, employee, place)%>% pivot_wider(names_from = place, values_from = employee,values_fn = list)
+best_three <- best_employee %>% filter(place_end %in% c(1,2,3)) %>% select(month_date, employee, place_end)%>% pivot_wider(names_from = place_end, values_from = employee,values_fn = list)
 
 best_three <- as.data.frame(best_three)
 best_three[best_three=="NULL"] <- '-'
 
-kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach")%>%
-  column_spec(2:4, width = "10em")%>%kable_styling(latex_options = c("striped", "HOLD_position"))%>%row_spec(0, bold=T)
+kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach.")%>%
+  column_spec(2:4, width = "10em")%>%kable_styling(latex_options = c("HOLD_position"))%>%row_spec(0, bold=T)
 ```
 
-```{r, echo=F}
-best_empl_res<-best_employee%>%filter(place %in% c(1,2,3))%>%select(total_num, month_date, place)%>%distinct()
+```{r, echo=F, fig.cap="Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca."}
+best_empl_res<-best_employee%>%arrange(year, month)%>%filter(place %in% c(1,2,3))%>%select(total_num, month_date, place)%>%distinct()
 
 best_empl_res$month_date<-factor(best_empl_res$month_date,levels=unique(best_empl_res$month_date))
 
-ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place))) + geom_col() +labs(title = "Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca", x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))
+ggplot(best_empl_res, aes(x=month_date,y=as.integer(total_num), fill=as.factor(place))) + geom_col() +labs(x ="Miesiąc", y = "Ilość gier", fill="Miejsce") + scale_fill_manual(values=c(color1, color2, color3))+scale_x_discrete(guide = guide_axis(angle = 45))
+```
+```{r,echo=F}
+month_now <- best_three$month_date[1]
+best_empl_now <- best_three$`1`[1]
+best_empl_now_res <- best_employee%>%filter(month_date==month_now & place_end==1)
 ```
 
+Aktualnie pracownikiem miesiąca (`r month_now`) jest `r best_empl_now`. Tytuł ten otrzymuje dzięki sprzedaży `r as.integer(best_empl_now_res$num_sold[1])` gier i `r as.integer(best_empl_now_res$num_rented[1])` wypożyczeniom, co sumarycznie daje mu wynik `r as.integer(best_empl_now_res$total_num[1])` gry.
 
 # Top 10 zawodników turniejowych
 
