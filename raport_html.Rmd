@@ -132,7 +132,7 @@ ggplotly(tournament_num_plot, tooltip="text")
 best_players<-tournaments_df %>% group_by(tournament_id) %>% mutate(points=100-place+1)%>%group_by(title, customer_name)%>%mutate(suma=sum(points))%>%ungroup()%>%select(title, customer_name, suma)%>%distinct()%>%group_by(title)%>%arrange(desc(suma), .by_group = T)%>%top_n(10)%>%mutate(Miejsce=rank(-suma,ties.method="min"))
 ```
 ```{r, echo=F}
-top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(names_from=title, values_from=customer_name,values_fn = list(customer_name = ~paste(., collapse = ", ")))
+top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(names_from=title, values_from=customer_name,values_fn = list(customer_name = ~paste(., collapse = ", ")))%>%arrange(Miejsce)
 
 top_10[is.na(top_10)] <- '-'
 
