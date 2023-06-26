@@ -26,6 +26,7 @@ if __name__ == "__main__":
     phone_numbers = generate_ALL_phone_numbers(CUSTOMERS_AMOUNT+EMPLOYEES_AMOUNT)
     customers_tbl = generate_customers_tbl(names_lists, phone_numbers, proportions)
     employees_tbl = generate_employees_tbl(phone_numbers)
+    payoffs_tbl, temp_payoff_pay = generate_payoffs()
     termines_tbl = generate_schedule_tbl()
     tournaments_tbl = generate_tournaments_tbl(tournament_games)
     results_tbl = generate_results_table(tournaments_tbl, customers_tbl)
@@ -35,7 +36,7 @@ if __name__ == "__main__":
 
     temp_rent_pay = temp_rent_payments(rentals_tbl)
     temp_sales_pay = temp_sales_payments(sales_tbl, games_tbl)
-    payments_tbl = concat_payments(temp_rent_pay, temp_sales_pay)
+    payments_tbl = concat_payments(temp_rent_pay, temp_sales_pay, temp_payoff_pay)
 
     temp_rent = temp_rent_invent(rentals_tbl)
     temp_sales =  temp_sales_invent(sales_tbl, last_rent_inventory_id)
@@ -57,4 +58,5 @@ if __name__ == "__main__":
     sales_tbl.to_sql("Sales", con =  connection, if_exists='append', index=False)
     inventory_tbl.to_sql("Inventory", con =  connection, if_exists='append', index=False)
     payments_tbl.to_sql("Finances", con =  connection, if_exists='replace', index=False)
+    payoffs_tbl.to_sql("Payoffs", con =  connection, if_exists='replace', index=False)
     connection.close()

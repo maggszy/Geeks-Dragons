@@ -13,6 +13,7 @@ CUSTOMERS_AMOUNT = 1000
 EMPLOYEES_AMOUNT = 6
 YEAR = 2022
 PRICE_FOR_DAY = 10
+DAILY_PAYOFF = 250
 
 new_games_df = pd.read_csv("data/games.csv", encoding= 'unicode_escape', sep = ";")
 eng_first_names_df = pd.read_csv("data/english_first_names.csv").sort_values(by = ["Rank"])
@@ -103,7 +104,43 @@ def generate_employees_tbl(phone_numbers):
     employees_tbl["address_id"] = np.arange( 1, EMPLOYEES_AMOUNT+1)
     return employees_tbl
 
-payoff_tbl = pd.DataFrame()
+def payment(row, days_0, days_1, days_2):
+    if row["employee_id"] % 6 == 1 or row["employee_id"] % 6 == 2:
+        month = row["month"]
+        return days_0[month] * DAILY_PAYOFF
+    elif row["employee_id"] % 6 == 3 or row["employee_id"] % 6 == 4:
+        month = row["month"]
+        return days_1[month] * DAILY_PAYOFF
+    elif row["employee_id"] % 6 == 5 or row["employee_id"] % 6 == 0:
+        month = row["month"]
+        return days_2[month] * DAILY_PAYOFF
+    
+def payoff_date(row):
+    return datetime.date(YEAR, row["month"], 10)
+ 
+def generate_payoffs():
+    df = pd.DataFrame()
+    df["date"] = pd.date_range(f"01.01.{YEAR}", f"31.12.{YEAR}")
+    df["day"] = df["date"].dt.dayofyear
+    df['month'] = df['date'].dt.month
+    days_0 = df[df['day'] % 3 == 0].groupby('month').size()
+    days_1 = df[df['day'] % 3 == 1].groupby('month').size()
+    days_2 = df[df['day'] % 3 == 2].groupby('month').size()
+
+    payoffs_tbl = pd.DataFrame()
+    payoffs_tbl["employee_id"] = [id for id  in range(1,6+1)] * 12
+    payoffs_tbl["payment_id"] = random.sample(range(1000,9999), payoffs_tbl.shape[0])
+
+    temp_payoff = payoffs_tbl.copy()
+    temp_payoff["month"] = generate_list_with_occurrences(np.arange(1,12+1), [6 for _ in range(12)])
+    temp_payoff["value"] = temp_payoff.apply(lambda row: payment(row, days_0, days_1, days_2), axis = 1)
+    temp_payoff["date"] = temp_payoff.apply(lambda row: payoff_date(row), axis = 1)
+    temp_payoff = temp_payoff.drop("month", axis = 1)
+    temp_payoff["in/out"] = np.repeat("out", temp_payoff.shape[0])
+    temp_payoff["title"] = np.repeat("Payoff", temp_payoff.shape[0])
+    return payoffs_tbl, temp_payoff
+
+
 
 def generate_schedule_tbl():
     termines_tbl = pd.DataFrame()
@@ -233,7 +270,7 @@ def generate_sales_tbl(customers_tbl, last_rent_inventory_id):
     sales_tbl = sales_tbl.drop("rent_day", axis = 1)
     sales_tbl["inventory_id"] = np.arange(last_rent_inventory_id + 1, sales_tbl.shape[0] + last_rent_inventory_id+1)
     sales_tbl.sort_values(["inventory_id"])
-    sales_tbl["payment_id"] = random.sample(range(5000001,9000000), sales_tbl.shape[0])
+    sales_tbl["payment_id"] = random.sample(range(50001,90000), sales_tbl.shape[0])
     ids = [generate_employee_id(day) for day in sales_days]
     sales_tbl["employee_id"] = ids
     return sales_tbl
@@ -248,8 +285,8 @@ def temp_sales_payments(sales_tbl, games_tbl):
     temp_sales_pay["title"] = np.repeat("Payment for purchase", temp_sales_pay.shape[0])
     return temp_sales_pay
 
-def concat_payments(temp_rent_pay, temp_sales_pay):
-    payments_tbl = pd.concat([temp_rent_pay, temp_sales_pay], axis = 0)
+def concat_payments(temp_rent_pay, temp_sales_pay, temp_payoffs_pay):
+    payments_tbl = pd.concat([temp_payoffs_pay, temp_rent_pay, temp_sales_pay ], axis = 0)
     return payments_tbl
 
 

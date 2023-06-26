@@ -105,3 +105,9 @@ CREATE OR REPLACE TABLE Employees
   PRIMARY KEY (employee_id)
 );
 
+CREATE OR REPLACE TABLE Payoffs
+(
+  payment_id  INT      NOT NULL,
+  employee_id SMALLINT NOT NULL,
+  PRIMARY KEY (payment_id)
+);
