@@ -25,6 +25,7 @@ pl_first_names_w_df = pd.read_csv("data/polish_female_names.csv")
 pl_first_names_m_df = pd.read_csv("data/polish_male_names.csv")
 pl_last_names_w_df = pd.read_csv("data/polish_female_last_names.csv")
 pl_last_names_m_df = pd.read_csv("data/polish_male_last_names.csv")
+address_df = pd.read_csv("data/address.csv", sep = ";")
 
 eng_first_names = eng_first_names_df["Child's First Name"][0:2000]
 eng_last_names = eng_last_names_df["SURNAME"] # only 1000 most popular
@@ -107,6 +108,18 @@ def generate_employees_tbl(phone_numbers):
     employees_tbl["address_id"] = np.arange( 1, EMPLOYEES_AMOUNT+1)
     return employees_tbl
 
+def generate_address_tbl():
+    print(address_df)
+    address_tbl = address_df[["ULICA_NAZWA", "NUMER_ADR", "KOD_POCZTOWY"]].sample(EMPLOYEES_AMOUNT)
+    address_tbl.rename(columns = {"ULICA_NAZWA":"street", "NUMER_ADR": "number", "KOD_POCZTOWY":"postal_code"}, inplace=True)
+    address_tbl["address_id"] = np.arange(1, EMPLOYEES_AMOUNT+1)
+    address_tbl["country"] = np.repeat("Poland", EMPLOYEES_AMOUNT)
+    address_tbl["city"] = np.repeat("Wrocław", EMPLOYEES_AMOUNT)
+    print(address_tbl)
+    return address_tbl
+
+generate_address_tbl()
+
 def payment(row, days_0, days_1, days_2):
     if row["employee_id"] % 6 == 1 or row["employee_id"] % 6 == 2:
         month = row["month"]
@@ -129,17 +142,16 @@ def generate_payoffs():
     days_0 = df[df['day'] % 3 == 0].groupby('month').size()
     days_1 = df[df['day'] % 3 == 1].groupby('month').size()
     days_2 = df[df['day'] % 3 == 2].groupby('month').size()
-
+    
     payoffs_tbl = pd.DataFrame()
     payoffs_tbl["employee_id"] = [id for id  in range(1,6+1)] * 12
     payoffs_tbl["payment_id"] = random.sample(range(1,999), payoffs_tbl.shape[0])
-
     temp_payoff = payoffs_tbl.copy()
     temp_payoff["month"] = generate_list_with_occurrences(np.arange(1,12+1), [6 for _ in range(12)])
     temp_payoff["value"] = temp_payoff.apply(lambda row: payment(row, days_0, days_1, days_2), axis = 1)
     temp_payoff["date"] = temp_payoff.apply(lambda row: payoff_date(row), axis = 1)
     temp_payoff = temp_payoff.drop("month", axis = 1)
-    temp_payoff["in/out"] = np.repeat("out", temp_payoff.shape[0])
+    temp_payoff["in_out"] = np.repeat(0, temp_payoff.shape[0])
     temp_payoff["title"] = np.repeat("Payoff", temp_payoff.shape[0])
     temp_payoff = temp_payoff.drop("employee_id", axis = 1)
     return payoffs_tbl, temp_payoff
@@ -257,7 +269,7 @@ def temp_rent_payments(rentals_tbl):
     end = pd.to_datetime(rentals["return_date"])
     duration = end - start
     temp_rent_pay["value"] = duration.dt.days * 10
-    temp_rent_pay["in/out"] = np.repeat("in", temp_rent_pay.shape[0])
+    temp_rent_pay["in_out"] = np.repeat(1, temp_rent_pay.shape[0])
     temp_rent_pay["title"] = np.repeat("Payment for rental", temp_rent_pay.shape[0])
     return temp_rent_pay
 
@@ -284,7 +296,7 @@ def temp_sales_payments(sales_tbl, games_tbl):
     temp_sales_pay["payment_id"] = sales_tbl["payment_id"]
     temp_sales_pay["date"] = sales_tbl["date"]
     temp_sales_pay["value"] = sales_with_games["Price"]
-    temp_sales_pay["in/out"] = np.repeat("in", temp_sales_pay.shape[0])
+    temp_sales_pay["in_out"] = np.repeat(1, temp_sales_pay.shape[0])
     temp_sales_pay["title"] = np.repeat("Payment for purchase", temp_sales_pay.shape[0])
     return temp_sales_pay
 
@@ -294,7 +306,7 @@ def temp_entry_fee_payments():
     temp_fee_pay["date"] = generate_list_with_occurrences(dates, [64 for _ in range(1,13)])
     temp_fee_pay["value"] = np.repeat(ENTRY_FEE, temp_fee_pay.shape[0])
     temp_fee_pay["payment_id"] = random.sample(range(50001, 90000), temp_fee_pay.shape[0])
-    temp_fee_pay["in/out"] = np.repeat("in", temp_fee_pay.shape[0])
+    temp_fee_pay["in_out"] = np.repeat(1, temp_fee_pay.shape[0])
     temp_fee_pay["title"] = np.repeat("Entry fee", temp_fee_pay.shape[0])
     return temp_fee_pay
 
@@ -344,3 +356,4 @@ def drop_from_sales(sales_tbl):
 def drop_from_rentals(rentals_tbl):
     rentals_tbl = rentals_tbl.drop("game_id", axis =1)
     return rentals_tbl
+

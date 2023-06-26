@@ -1,3 +1,13 @@
+CREATE OR REPLACE TABLE Addresses
+(
+  address_id  SMALLINT    NOT NULL,
+  country     VARCHAR(50) NOT NULL,
+  city        VARCHAR(50) NOT NULL,
+  street      VARCHAR(45) NOT NULL,
+  number      SMALLINT    NOT NULL,
+  postal_code VARCHAR(10) NOT NULL,
+  PRIMARY KEY (address_id)
+);
 
 
 CREATE OR REPLACE TABLE Customers
