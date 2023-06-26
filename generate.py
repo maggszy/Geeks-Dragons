@@ -14,6 +14,9 @@ EMPLOYEES_AMOUNT = 6
 YEAR = 2022
 PRICE_FOR_DAY = 10
 DAILY_PAYOFF = 250
+ENTRY_FEE = 20
+PRIZE = 150
+MAX_PLAYERS = 16*4
 
 new_games_df = pd.read_csv("data/games.csv", encoding= 'unicode_escape', sep = ";")
 eng_first_names_df = pd.read_csv("data/english_first_names.csv").sort_values(by = ["Rank"])
@@ -129,7 +132,7 @@ def generate_payoffs():
 
     payoffs_tbl = pd.DataFrame()
     payoffs_tbl["employee_id"] = [id for id  in range(1,6+1)] * 12
-    payoffs_tbl["payment_id"] = random.sample(range(1000,9999), payoffs_tbl.shape[0])
+    payoffs_tbl["payment_id"] = random.sample(range(1,999), payoffs_tbl.shape[0])
 
     temp_payoff = payoffs_tbl.copy()
     temp_payoff["month"] = generate_list_with_occurrences(np.arange(1,12+1), [6 for _ in range(12)])
@@ -138,15 +141,16 @@ def generate_payoffs():
     temp_payoff = temp_payoff.drop("month", axis = 1)
     temp_payoff["in/out"] = np.repeat("out", temp_payoff.shape[0])
     temp_payoff["title"] = np.repeat("Payoff", temp_payoff.shape[0])
+    temp_payoff = temp_payoff.drop("employee_id", axis = 1)
     return payoffs_tbl, temp_payoff
 
-
+def first_saturdays(YEAR):
+    return [(datetime.date(YEAR, month, 1) + datetime.timedelta(days=((6 - datetime.date(YEAR, month, 1).weekday()) % 7)))for month in range(1, 13)]
 
 def generate_schedule_tbl():
     termines_tbl = pd.DataFrame()
     termines_tbl["tournament_id"] = range(1, 13)
-    first_thursdays = [(datetime.date(YEAR, month, 1) + datetime.timedelta(days=((6 - datetime.date(YEAR, month, 1).weekday()) % 7))).strftime("%d.%m.%y") for month in range(1, 13)]
-    termines_tbl["date"] = first_thursdays
+    termines_tbl["date"] = first_saturdays(YEAR)
     return termines_tbl
 
 def random_games(games_tbl):
@@ -157,9 +161,9 @@ def generate_tournaments_tbl(tournament_games):
     tournaments_tbl = pd.DataFrame()
     tournaments_tbl["tournament_id"] = range(1, 13)
     tournaments_tbl["game_id"] = random.choices(tournament_games, k = 12)
-    tournaments_tbl["max_players"] = 16 * 4
-    tournaments_tbl["entry_fee"] = 20
-    tournaments_tbl["prize"] = 150
+    tournaments_tbl["max_players"] = MAX_PLAYERS
+    tournaments_tbl["entry_fee"] = ENTRY_FEE
+    tournaments_tbl["prize"] = PRIZE
     return tournaments_tbl
 
 def generate_results_table(tournaments_tbl, customers_tbl):
@@ -180,7 +184,6 @@ def simulate_inventory(rentals_tbl):
 
     inv_counter = 1
     for day in range(1, 366):
-
         #print(f"day:{day}")
         temp = rentals_tbl[rentals_tbl["rent_day"] == day ]
         games_needed = temp["game_id"]
@@ -270,7 +273,7 @@ def generate_sales_tbl(customers_tbl, last_rent_inventory_id):
     sales_tbl = sales_tbl.drop("rent_day", axis = 1)
     sales_tbl["inventory_id"] = np.arange(last_rent_inventory_id + 1, sales_tbl.shape[0] + last_rent_inventory_id+1)
     sales_tbl.sort_values(["inventory_id"])
-    sales_tbl["payment_id"] = random.sample(range(50001,90000), sales_tbl.shape[0])
+    sales_tbl["payment_id"] = random.sample(range(1000,9999), sales_tbl.shape[0])
     ids = [generate_employee_id(day) for day in sales_days]
     sales_tbl["employee_id"] = ids
     return sales_tbl
@@ -285,8 +288,23 @@ def temp_sales_payments(sales_tbl, games_tbl):
     temp_sales_pay["title"] = np.repeat("Payment for purchase", temp_sales_pay.shape[0])
     return temp_sales_pay
 
-def concat_payments(temp_rent_pay, temp_sales_pay, temp_payoffs_pay):
-    payments_tbl = pd.concat([temp_payoffs_pay, temp_rent_pay, temp_sales_pay ], axis = 0)
+def temp_entry_fee_payments():
+    temp_fee_pay = pd.DataFrame()
+    dates = first_saturdays(YEAR)
+    temp_fee_pay["date"] = generate_list_with_occurrences(dates, [64 for _ in range(1,13)])
+    temp_fee_pay["value"] = np.repeat(ENTRY_FEE, temp_fee_pay.shape[0])
+    temp_fee_pay["payment_id"] = random.sample(range(50001, 90000), temp_fee_pay.shape[0])
+    temp_fee_pay["in/out"] = np.repeat("in", temp_fee_pay.shape[0])
+    temp_fee_pay["title"] = np.repeat("Entry fee", temp_fee_pay.shape[0])
+    return temp_fee_pay
+
+def concat_payments(temp_payoffs_pay, temp_sales_pay, temp_rent_pay, temp_fee_pay ):
+    # 1 - 999: payoffs
+    # 1000 - 9999: sales
+    # 10 000 - 50 000: rentals
+    # 50 001 - 90 000: entry fee
+
+    payments_tbl = pd.concat([temp_payoffs_pay, temp_rent_pay, temp_sales_pay, temp_fee_pay ], axis = 0)
     return payments_tbl
 
 

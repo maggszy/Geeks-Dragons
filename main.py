@@ -36,7 +36,9 @@ if __name__ == "__main__":
 
     temp_rent_pay = temp_rent_payments(rentals_tbl)
     temp_sales_pay = temp_sales_payments(sales_tbl, games_tbl)
-    payments_tbl = concat_payments(temp_rent_pay, temp_sales_pay, temp_payoff_pay)
+    temp_fee_pay = temp_entry_fee_payments()
+    print(temp_fee_pay)
+    payments_tbl = concat_payments( temp_payoff_pay, temp_sales_pay, temp_rent_pay, temp_fee_pay)
 
     temp_rent = temp_rent_invent(rentals_tbl)
     temp_sales =  temp_sales_invent(sales_tbl, last_rent_inventory_id)
