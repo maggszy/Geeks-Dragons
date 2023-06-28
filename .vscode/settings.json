@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "giniewicz.it",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "test",
+            "database": "team02",
+            "username": "team02",
+            "password": "te@m0z"
+        }
+    ]
+}

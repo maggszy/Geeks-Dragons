@@ -3,9 +3,9 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -759.9999999999999,
-    "scrollLeft": -216.01249999999987,
-    "zoomLevel": 0.8,
+    "scrollTop": 0,
+    "scrollLeft": -322.0124999999998,
+    "zoomLevel": 0.9,
     "show": {
       "tableComment": true,
       "columnComment": true,
@@ -19,7 +19,7 @@
     },
     "database": "MariaDB",
     "databaseName": "",
-    "canvasType": "@vuerd/builtin-sql-ddl",
+    "canvasType": "ERD",
     "language": "GraphQL",
     "tableCase": "pascalCase",
     "columnCase": "camelCase",
@@ -189,7 +189,7 @@
           "active": false,
           "left": 609.9633,
           "top": 418.9689,
-          "zIndex": 11,
+          "zIndex": 7,
           "widthName": 64.84814453125,
           "widthComment": 60
         },
@@ -409,10 +409,10 @@
           }
         ],
         "ui": {
-          "active": true,
+          "active": false,
           "left": 615.6289,
           "top": 832.188,
-          "zIndex": 61,
+          "zIndex": 12,
           "widthName": 66.30810546875,
           "widthComment": 60
         },
@@ -566,7 +566,7 @@
           "active": false,
           "left": 75.3711,
           "top": 867.3793,
-          "zIndex": 10,
+          "zIndex": 6,
           "widthName": 63.419921875,
           "widthComment": 60
         },
@@ -812,7 +812,7 @@
           "active": false,
           "left": 25.0001,
           "top": 36.8887,
-          "zIndex": 20,
+          "zIndex": 8,
           "widthName": 60,
           "widthComment": 60
         },
@@ -872,7 +872,7 @@
           {
             "name": "type",
             "comment": "",
-            "dataType": "VARCHAR(50)",
+            "dataType": "Char(1)",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -887,17 +887,17 @@
               "pfk": false,
               "widthName": 60,
               "widthComment": 60,
-              "widthDataType": 87.71875,
+              "widthDataType": 60,
               "widthDefault": 60
             },
             "id": "24962df5-e58c-47da-bb7a-ba581413a0ba"
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 612.0719,
           "top": 237.3686,
-          "zIndex": 2,
+          "zIndex": 19,
           "widthName": 60,
           "widthComment": 60
         },
@@ -959,7 +959,7 @@
           "active": false,
           "left": 1458.2209,
           "top": 7.1498,
-          "zIndex": 3,
+          "zIndex": 2,
           "widthName": 129.91796875,
           "widthComment": 60
         },
@@ -1090,7 +1090,7 @@
           "active": false,
           "left": 584.2411,
           "top": 19.5562,
-          "zIndex": 22,
+          "zIndex": 9,
           "widthName": 77.14990234375,
           "widthComment": 60
         },
@@ -1175,7 +1175,7 @@
           "active": false,
           "left": 1445.5179,
           "top": 136.0195,
-          "zIndex": 36,
+          "zIndex": 11,
           "widthName": 122.6689453125,
           "widthComment": 60
         },
@@ -1352,7 +1352,7 @@
           "active": false,
           "left": 1530.7868,
           "top": 343.1111,
-          "zIndex": 32,
+          "zIndex": 10,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1483,7 +1483,7 @@
           "active": false,
           "left": 1442.1761,
           "top": 862.0005,
-          "zIndex": 6,
+          "zIndex": 3,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1545,7 +1545,7 @@
           "active": false,
           "left": 623.223,
           "top": 1219.0751,
-          "zIndex": 8,
+          "zIndex": 5,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1653,7 +1653,7 @@
           "active": false,
           "left": 1500.0358,
           "top": 1234.4183,
-          "zIndex": 7,
+          "zIndex": 4,
           "widthName": 60,
           "widthComment": 60
         },
@@ -1703,7 +1703,7 @@
           "columnIds": [
             "db5d6e6e-5657-4e7a-9c49-6825e0b1d821"
           ],
-          "x": 998.88781796875,
+          "x": 976.7408453125,
           "y": 335.2436,
           "direction": "right"
         },
@@ -1937,7 +1937,7 @@
           "columnIds": [
             "db5d6e6e-5657-4e7a-9c49-6825e0b1d821"
           ],
-          "x": 998.88781796875,
+          "x": 976.7408453125,
           "y": 269.9936,
           "direction": "right"
         },
