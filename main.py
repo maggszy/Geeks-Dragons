@@ -14,7 +14,7 @@ if __name__ == "__main__":
     proportions = np.array([0.4, 0.25, 0.35]) # ALL_ENG, W_PL, M_PL
     names_lists = (eng_first_names, eng_last_names, pl_first_names_w, pl_first_names_m,pl_last_names_w, pl_last_names_m)
 
-    games_tbl = generate_games_tbl(new_games_df)
+    games_tbl = generate_games_tbl(games_df)
     tournament_games = random_games(games_tbl)
     phone_numbers = generate_ALL_phone_numbers(CUSTOMERS_AMOUNT+EMPLOYEES_AMOUNT)
     customers_tbl = generate_customers_tbl(names_lists, phone_numbers, proportions)

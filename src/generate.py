@@ -18,7 +18,7 @@ ENTRY_FEE = 20
 PRIZE = 150
 MAX_PLAYERS = 16*4
 
-new_games_df = pd.read_csv("data/games.csv", encoding= 'unicode_escape', sep = ";")
+games_df = pd.read_csv("data/games.csv", encoding= 'unicode_escape', sep = ";")
 eng_first_names_df = pd.read_csv("data/english_first_names.csv").sort_values(by = ["Rank"])
 eng_last_names_df = pd.read_csv("data/english_last_names.csv", sep=";")
 pl_first_names_w_df = pd.read_csv("data/polish_female_names.csv")
@@ -27,8 +27,10 @@ pl_last_names_w_df = pd.read_csv("data/polish_female_last_names.csv")
 pl_last_names_m_df = pd.read_csv("data/polish_male_last_names.csv")
 address_df = pd.read_csv("data/address.csv", sep = ";")
 
+
+#taking most popular names
 eng_first_names = eng_first_names_df["Child's First Name"][0:2000]
-eng_last_names = eng_last_names_df["SURNAME"] # only 1000 most popular
+eng_last_names = eng_last_names_df["SURNAME"] 
 pl_first_names_w = pl_first_names_w_df["IMIĘ PIERWSZE"][0:100]
 pl_first_names_m = pl_first_names_m_df["IMIĘ PIERWSZE"][0:100]
 pl_last_names_w= pl_last_names_w_df["Nazwisko aktualne"][0:500]
@@ -37,16 +39,17 @@ pl_last_names_m = pl_last_names_m_df["Nazwisko aktualne"][0:500]
 
 
 def generate_list_with_occurrences(numbers, occurrences):
-    result = [number  for number, occurrence in zip(numbers, occurrences) for _ in range(occurrence)]
-    return result
+    return  [number  for number, occurrence in zip(numbers, occurrences) for _ in range(occurrence)]
 
 def generate_date_from_day_number(row):
     return datetime.datetime.strptime(str(YEAR) + "-" + str(row["rent_day"]), "%Y-%j")
 
 def generate_return_date(row):
-    #rental_date = datetime.datetime.strptime(, "%d.%m.%Y")
-    return_date = row["rental_date"] + datetime.timedelta(days = row["duration"] ) # maksymalnie tydzien 
+    return_date = row["rental_date"] + datetime.timedelta(days = row["duration"] )
     return  return_date if return_date.year == row["rental_date"].year else None
+
+def generate_email(row):
+    return row["first_name"].lower()+"."+ row["last_name"].lower() + str(np.random.randint(0,1000))+ "@mail.com"
 
 def generate_employee_id(year_day):
     if year_day % 3 == 0:
@@ -56,27 +59,22 @@ def generate_employee_id(year_day):
     elif year_day % 3 == 2:
         return random.randint(5,6)
 
-def generate_games_tbl(new_games_df):
-    games_df = new_games_df[[ "details.name","details.yearpublished", 'details.playingtime', 'details.minage',  "details.minplayers", "details.maxplayers" , "game.type"]]
+def generate_games_tbl(games_df):
+    games_df = games_df[[ "details.name","details.yearpublished", 'details.playingtime', 'details.minage',  "details.minplayers", "details.maxplayers" , "game.type"]]
     games_df.rename(columns = {"details.name":"title", "details.yearpublished": "release_year", 'details.playingtime':"play_time", 'details.minage': "min_age", "details.minplayers": "min_players", "details.maxplayers": "max_players", "game.type":"type"}, inplace=True)
     games_tbl = games_df.sample(n = GAMES_AMOUNT)
     games_tbl.insert(0, "game_id", np.arange(1, GAMES_AMOUNT+1))
     games_tbl["release_year"] = pd.to_datetime(games_tbl["release_year"])
     games_tbl["Price"] = np.round(np.random.uniform(50, 200, GAMES_AMOUNT)) + 0.99
-
     return games_tbl
 
 def generate_birth_dates(n):
     fake = Faker()
-    birth_dates = [fake.date_between(start_date = "-50y", end_date = "-20y") for _ in range(n)]
-    return birth_dates
+    return [fake.date_between(start_date = "-50y", end_date = "-20y") for _ in range(n)]
 
 def generate_ALL_phone_numbers(n):
-    phone_numbers = random.sample(range(100000000, 999999999), n)
-    return phone_numbers
+    return random.sample(range(100000000, 999999999), n)
 
-def generate_email(row):
-    return row["first_name"].lower()+"."+ row["last_name"].lower() + str(np.random.randint(0,1000))+ "@mail.com"
 
 def generate_customers_tbl( names_lists,phone_numbers, proportions = np.array([0.4, 0.25, 0.35])):
     numbers = proportions * CUSTOMERS_AMOUNT
@@ -109,13 +107,11 @@ def generate_employees_tbl(phone_numbers):
     return employees_tbl
 
 def generate_address_tbl():
-    print(address_df)
     address_tbl = address_df[["ULICA_NAZWA", "NUMER_ADR", "KOD_POCZTOWY"]].sample(EMPLOYEES_AMOUNT)
     address_tbl.rename(columns = {"ULICA_NAZWA":"street", "NUMER_ADR": "number", "KOD_POCZTOWY":"postal_code"}, inplace=True)
     address_tbl["address_id"] = np.arange(1, EMPLOYEES_AMOUNT+1)
     address_tbl["country"] = np.repeat("Poland", EMPLOYEES_AMOUNT)
     address_tbl["city"] = np.repeat("Wrocław", EMPLOYEES_AMOUNT)
-    print(address_tbl)
     return address_tbl
 
 def payment(row, days_0, days_1, days_2):
@@ -140,7 +136,6 @@ def generate_payoffs():
     days_0 = df[df['day'] % 3 == 0].groupby('month').size()
     days_1 = df[df['day'] % 3 == 1].groupby('month').size()
     days_2 = df[df['day'] % 3 == 2].groupby('month').size()
-    
     payoffs_tbl = pd.DataFrame()
     payoffs_tbl["employee_id"] = [id for id  in range(1,6+1)] * 12
     payoffs_tbl["payment_id"] = random.sample(range(1,999), payoffs_tbl.shape[0])
@@ -163,7 +158,6 @@ def generate_schedule_tbl():
     return termines_tbl
 
 def random_games(games_tbl):
-    # Z gier które zostały wyznaczone dla sklepu losuję 5 gier, które będą grami turniejowymi. (typ = board game, max graczy >= 4)
     return random.sample( games_tbl[( games_tbl["type"] == "boardgame") & ( games_tbl["max_players"] >= 4) ]["game_id"].to_list(), 5)
 
 def generate_tournaments_tbl(tournament_games):
@@ -182,26 +176,22 @@ def generate_results_table(tournaments_tbl, customers_tbl):
     results_tbl["place"] = [place for place  in range(1,65)] * 12
     results = [random.sample(customers_tbl["customer_id"].to_list(), k = 64) for _ in range(1, 13)]
     results_tbl["customer_id"] = [i for i in chain.from_iterable(results)]
-    #results_tbl.insert(0,"result_id", range(1,len(results_tbl)+1))
     return results_tbl
 
 def simulate_inventory(rentals_tbl):
-
     inventory = {} # game_id : [inventory_id]
     available = {} # game_id : [inventory_id]
     will_return = {} # return day : {inventory_id}
 
     inv_counter = 1
     for day in range(1, 366):
-        #print(f"day:{day}")
         temp = rentals_tbl[rentals_tbl["rent_day"] == day ]
         games_needed = temp["game_id"]
-        #print(f"games needed: {games_needed.to_list()}")
         for game_id in games_needed:
             rentals_tbl.loc[(rentals_tbl["rent_day"] == day)&(rentals_tbl["game_id"] == game_id), "employee_id"] = generate_employee_id(day)
-            try : # if available  set inv_id
+            try : # if available set inv_id
                 inv_id = available[game_id].pop()
-            except : # if not available add to inventory and set inv_id
+            except : # if not available add new to inventory and set inv_id
                 if game_id in inventory.keys():
                     inventory[game_id].append(inv_counter)
                 else:
@@ -209,10 +199,9 @@ def simulate_inventory(rentals_tbl):
                     available[game_id] = []
                 inv_id = inv_counter
                 inv_counter += 1
-
             #set inv_id in rentals_tbl
             rentals_tbl.loc[(rentals_tbl["rent_day"] == day)&(rentals_tbl["game_id"] == game_id), "inventory_id"] = inv_id
-            # add current inv_id to will return
+            # add current inv_id to will_return
             return_day = rentals_tbl.loc[(rentals_tbl["rent_day"] == day) & (rentals_tbl["inventory_id"] == inv_id), "return_day"].to_list()[0] 
             if return_day in will_return.keys():
                 will_return[return_day].append((game_id, inv_id))
@@ -220,19 +209,12 @@ def simulate_inventory(rentals_tbl):
                 will_return[return_day] = [(game_id, inv_id)]
         #move from will return to available
         try:
-            #print(f"returns today: {will_return[day]}")
             for key, value in enumerate( will_return[day]):
                 game_id, inv_id = will_return[day][key]
                 available[game_id].insert(0, inv_id)
-
             del will_return[day]
         except:
             pass
-
-
-    ##print(f"available: {available}")
-    #print(f"current inventory: {inventory}")
-    #print(f"will return: {will_return}")
     return rentals_tbl
 
 def generate_rentals_tbl(customers:list):
@@ -282,8 +264,7 @@ def generate_sales_tbl(customers_tbl, last_rent_inventory_id):
     sales_tbl["inventory_id"] = np.arange(last_rent_inventory_id + 1, sales_tbl.shape[0] + last_rent_inventory_id+1)
     sales_tbl.sort_values(["inventory_id"])
     sales_tbl["payment_id"] = random.sample(range(1000,9999), sales_tbl.shape[0])
-    ids = [generate_employee_id(day) for day in sales_days]
-    sales_tbl["employee_id"] = ids
+    sales_tbl["employee_id"] =[generate_employee_id(day) for day in sales_days]
     sales_tbl.insert(0, "sales_id", np.arange(1, sales_tbl.shape[0]+1))
     return sales_tbl
 
@@ -310,7 +291,6 @@ def concat_payments(temp_payoffs_pay, temp_sales_pay, temp_rent_pay, temp_fee_pa
     # 1000 - 9999: sales
     # 10 000 - 50 000: rentals
     # 50 001 - 90 000: entry fee
-
     payments_tbl = pd.concat([temp_payoffs_pay, temp_rent_pay, temp_sales_pay, temp_fee_pay ], axis = 0)
     return payments_tbl
 
@@ -319,7 +299,6 @@ def temp_rent_invent(rentals_tbl):
     temp_rent_invent["game_id"] = rentals_tbl["game_id"]
     temp_rent_invent["inventory_id"] = rentals_tbl["inventory_id"]
     temp_rent_invent["type"] = np.repeat("R", temp_rent_invent.shape[0])
-
     temp_rent_invent = temp_rent_invent.sort_values(["inventory_id"])
     temp_rent_invent.drop_duplicates(inplace=True)
     return temp_rent_invent
@@ -339,8 +318,7 @@ def temp_tour_invent(tournament_games, temp_rent_inv, temp_sales_inv):
     return inventory_tour_tbl
 
 def generate_inventory_tbl(temp_rent_inv, temp_sales_inv, temp_tour_inv):
-    inventory_tbl = pd.concat([temp_rent_inv, temp_sales_inv, temp_tour_inv], axis = 0)
-    return inventory_tbl
+    return pd.concat([temp_rent_inv, temp_sales_inv, temp_tour_inv], axis = 0)
 
 def drop_from_sales(sales_tbl):
     sales_tbl = sales_tbl.drop("date", axis = 1)
@@ -348,6 +326,5 @@ def drop_from_sales(sales_tbl):
     return sales_tbl
 
 def drop_from_rentals(rentals_tbl):
-    rentals_tbl = rentals_tbl.drop("game_id", axis =1)
-    return rentals_tbl
+    return rentals_tbl.drop("game_id", axis =1)
 
