@@ -284,6 +284,7 @@ def generate_sales_tbl(customers_tbl, last_rent_inventory_id):
     sales_tbl["payment_id"] = random.sample(range(1000,9999), sales_tbl.shape[0])
     ids = [generate_employee_id(day) for day in sales_days]
     sales_tbl["employee_id"] = ids
+    sales_tbl.insert(0, "sales_id", np.arange(1, sales_tbl.shape[0]+1))
     return sales_tbl
 
 def temp_sales_payments(sales_tbl, games_tbl):

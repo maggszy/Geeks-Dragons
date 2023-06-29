@@ -84,13 +84,14 @@ CREATE OR REPLACE  TABLE Rentals
   PRIMARY KEY (rental_id)
 );
 
-CREATE OR REPLACE  TABLE Sales
+CREATE OR REPLACE TABLE Sales
 (
-  payment_id   INT      NOT NULL,
-  employee_id  SMALLINT NOT NULL,
-  customer_id  SMALLINT NOT NULL,
-  inventory_id SMALLINT NOT NULL,
-  PRIMARY KEY (payment_id)
+  sales_id     SMALLINT UNSIGNED  NOT NULL,
+  payment_id   MEDIUMINT UNSIGNED NOT NULL,
+  employee_id  SMALLINT UNSIGNED  NOT NULL,
+  customer_id  SMALLINT UNSIGNED  NOT NULL,
+  inventory_id SMALLINT UNSIGNED  NOT NULL,
+  PRIMARY KEY (sales_id)
 );
 
 CREATE OR REPLACE  TABLE Tournament_schedule
