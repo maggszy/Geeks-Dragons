@@ -11,7 +11,7 @@ output:
 \renewcommand{\tablename}{Tabela}
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = F, fig.pos="H",out.width = "75%", fig.align = 'center')
+knitr::opts_chunk$set(echo = F, warning = F, fig.pos="H",out.width = "75%", fig.align = 'center')
 library(RMariaDB)
 library(ggplot2)
 library(dplyr)
@@ -21,13 +21,21 @@ library(kableExtra)
 library(emojifont)
 library(stringr)
 library(colorspace)
+library(wesanderson)
 ```
 
 ```{r, echo=F, include=F}
-color1<-"#00BFC4"
-color2<- "#7CAE00"
-color3<-"#C77CEE"
-color4<- "#D9EDEE"
+# color1<-"#00BFC4"
+# color2<- "#7CAE00"
+# color3<-"#C77CEE"
+# color4<- "#D9EDEE"
+pal <-wes_palette("GrandBudapest1", n=4, type="discrete")  #paleta kolorów
+pal_con <- wes_palette("GrandBudapest1", n=10, type="continuous")
+
+color1<-pal[1]
+color2<- pal[2]
+color3<-pal[3]
+color4<- pal[4]
 
 con <- dbConnect(RMariaDB::MariaDB(),
                 dbname = 'team02',
@@ -85,11 +93,12 @@ best_three <- best_employee %>% filter(place_end %in% c(1,2,3)) %>% select(month
 best_three <- as.data.frame(best_three)
 best_three[best_three=="NULL"] <- '-'
 
-kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach.")%>%
-  column_spec(2:4, width = "10em")%>%kable_styling(latex_options = c("HOLD_position"))%>%row_spec(0, bold=T, background=color4)
+kable(best_three, col.names=c("Miesiąc", "Najlepszy pracownik (1. miejsce)", "2. miejsce", "3. miejsce"), caption="Top 3 pracowników w poszczególnych miesiącach.", align='cccc')%>%
+  column_spec(2:4, width = "10em") %>% kable_styling(latex_options = c("HOLD_position")) %>%
+  row_spec(0, bold=T, background=color1)
 ```
 
-```{r, echo=F, fig.cap="Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca w ostatnich 12 miesiącach."}
+```{r,  fig.cap="Ilość sprzedanych i wypożyczonych gier przez pracowników miesiąca w ostatnich 12 miesiącach."}
 best_empl_res<-best_employee%>%arrange(year, month)%>%filter(place_end %in% c(1,2,3))%>%select(total_num, month_date, place_end)%>%distinct()%>%tail(12*3)
 
 best_empl_res$month_date<-factor(best_empl_res$month_date,levels=unique(best_empl_res$month_date))
@@ -120,21 +129,29 @@ tournaments_num <- tournaments_df %>% select(title, tournament_id)%>%distinct()%
 
 Sklep przeprowadził turnieje w następujących grach: `r unique(tournaments_df$title)`. W sumie odbyło się **`r sum(tournaments_num$num)`** turniejów.
 
-```{r,echo=F, fig.cap="Liczba rozegranych turniejów w zależności od gry.", out.width = "65%"}
+```{r, fig.cap="Liczba rozegranych turniejów w zależności od gry.", out.width = "65%"}
 ggplot(tournaments_num, aes(title, num))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba turniejów")+coord_flip()
 ```
 
 ```{r, echo=F, message=F}
-best_players<-tournaments_df %>% group_by(tournament_id) %>% mutate(points=100-place+1)%>%group_by(title, customer_name)%>%mutate(suma=sum(points))%>%ungroup()%>%select(title, customer_name, suma)%>%distinct()%>%group_by(title)%>%arrange(desc(suma), .by_group = T)%>%top_n(10)%>%mutate(Miejsce=rank(-suma,ties.method="min"))
+best_players<-tournaments_df %>% group_by(tournament_id) %>% mutate(points=100-place+1) %>%
+  group_by(title, customer_name) %>% mutate(suma=sum(points)) %>% ungroup() %>%
+  select(title, customer_name, suma) %>% distinct() %>% group_by(title) %>% 
+  arrange(desc(suma), .by_group = T) %>% top_n(10) %>% mutate(Miejsce=rank(-suma,ties.method="min"))
 ```
+
 ```{r, echo=F}
-top_10 <-best_players%>%select(Miejsce, title, customer_name)%>%pivot_wider(names_from=title, values_from=customer_name,values_fn = list(customer_name = ~paste(., collapse = ", ")))%>%arrange(Miejsce)
+top_10 <-best_players %>% select(Miejsce, title, customer_name ) %>% 
+  pivot_wider(names_from=title, values_from=customer_name,values_fn = list(customer_name = ~paste(., collapse = ", "))) %>% arrange(Miejsce)
 
 top_10[is.na(top_10)] <- '-'
 
 tournament_unique_num <- length(unique(tournaments_df$title))
 
-kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.")%>%column_spec(2:(tournament_unique_num+1), width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"))%>%row_spec(0, bold=T, background=color4)%>%column_spec(1, bold = T,background=color4)
+kable(top_10, caption="Top 10 graczy turniejowych z podziałem na gry.") %>%
+  column_spec(2:(tournament_unique_num+1), width = "7em") %>% 
+  kable_styling(latex_options = c("HOLD_position","scale_down")) %>% 
+  row_spec(0, bold=T, background=color1) %>% column_spec(1, bold = T,background=color1)
 ```
 
 # Rankingi popularności
@@ -152,13 +169,14 @@ ORDER BY game_num DESC, title;'
 pop_rent_df <- dbGetQuery(con, pop_rent)
 ```
 
-```{r, echo=F}
-ggplot(pop_rent_df %>% head(10) %>% arrange(game_num), aes(x=factor(title, levels=title), y=as.integer(game_num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba wypożyczeń")+coord_flip()
+```{r, fig.cap="10 najczęściej wypożyczanych gier."}
+ggplot(pop_rent_df %>% head(10) %>% arrange(game_num), aes(x=factor(title, levels=title), y=as.integer(game_num))) + geom_col(fill=color4) + labs(x ="Tytuł gry", y = "Liczba wypożyczeń") + 
+  coord_flip()
 ```
 
 ```{r, echo=FALSE}
 rent_pop_max <- head(pop_rent_df,1)$game_num
-rent_pop_max_df <- pop_rent_df %>%filter(game_num==rent_pop_max)
+rent_pop_max_df <- pop_rent_df %>% filter(game_num==rent_pop_max)
 ```
 
 Najczęściej wypożyczana gra to **`r rent_pop_max_df$title`**, została wypożyczona **`r as.integer(rent_pop_max)`** razy.
@@ -176,13 +194,14 @@ ORDER BY game_num DESC, title'
 pop_sales_df <- dbGetQuery(con, pop_sales)
 ```
 
-```{r, echo=F}
-ggplot(pop_sales_df %>% head(10) %>% arrange(game_num), aes(x=factor(title, levels=title), y=as.integer(game_num)))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba sprzedanych")+coord_flip()
+```{r, fig.cap = "10 najliczniej sprzedanych gier."}
+ggplot(pop_sales_df %>% head(10) %>% arrange(game_num), aes(x=factor(title, levels=title), y=as.integer(game_num))) + geom_col(fill=color1) + labs(x ="Tytuł gry", y = "Liczba sprzedanych") +
+  coord_flip()
 ```
 
 ```{r, echo=FALSE}
 sale_pop_max <- head(pop_sales_df,1)$game_num
-sale_pop_max_df <- pop_sales_df %>%filter(game_num==sale_pop_max)
+sale_pop_max_df <- pop_sales_df %>% filter(game_num==sale_pop_max)
 ```
 
 Najczęściej wypożyczana gra to **`r sale_pop_max_df$title`**, została wypożyczona **`r as.integer(sale_pop_max)`** razy.
@@ -206,16 +225,22 @@ Aktualnie jest **`r keep_games_df%>%filter(is.na(return_date))%>%count()`** wypo
 
 ```{r, echo=F, fig.cap="Najdłużej przetrzymywane gry w historii sklepu."}
 day_num_max <- head(keep_games_df,1)$day_num
-rental_id_max <- keep_games_df%>%filter(day_num==day_num_max)
+rental_id_max <- keep_games_df %>% filter(day_num==day_num_max)
 
-ggplot(keep_games_df%>%head(10), aes(title, day_num, fill=factor(ifelse(rental_id %in%rental_id_max$rental_id,"Maksimum","Pozostałe"))))+
-  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1))+theme(legend.position = "none")+labs(x ="Tytuł gry", y = "Ilość dni")+coord_flip()
+ggplot(keep_games_df%>%head(10), aes(title, day_num, fill=factor(ifelse(rental_id %in%rental_id_max$rental_id,"Maksimum","Pozostałe")))) +
+  geom_col(position = position_dodge2())+scale_fill_manual(name = "area", values=c(color3,color1)) +
+  theme(legend.position = "none") + labs(x ="Tytuł gry", y = "Ilość dni") + coord_flip()
 ```
 
 ```{r, echo=F}
-keep_games_table<- keep_games_df%>%head(10)%>%select(title, customer_name, rental_date, day_num)%>%mutate(rental_date=format(rental_date, "%d.%m.%Y"))
+keep_games_table<- keep_games_df %>% head(10) %>% 
+  select(title, customer_name, rental_date, day_num) %>% 
+  mutate(rental_date=format(rental_date, "%d.%m.%Y"))
 
-kable(keep_games_table, col.names=c("Tytuł gry","Klient","Data wypożyczenia","Długość wypożyczenia"), caption="Najdłużej przetrzymywane gry w historii sklepu wraz z datami wypożyczenia.")%>%column_spec(1:2, width = "11em")%>%column_spec(3:4, width = "7em")%>%kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center")%>%row_spec(0, bold=T, background=color4)
+kable(keep_games_table, col.names=c("Tytuł gry","Klient","Data wypożyczenia","Długość wypożyczenia"), caption="Najdłużej przetrzymywane gry w historii sklepu wraz z datami wypożyczenia.", align='llcc') %>% 
+  column_spec(1:2, width = "11em") %>% column_spec(3:4, width = "7em") %>% 
+  kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>% 
+  row_spec(0, bold=T, background=color1)
 ```
 
 Największa liczba dni przez które była przetrzymywana gra to **`r day_num_max`**. Taki wynik został osiągnięty przy wypożyczeniu **`r rental_id_max$title`** przez **`r rental_id_max$customer_name`**.
@@ -229,12 +254,13 @@ mean_keep_games <- keep_games_df %>% group_by(title) %>% summarise(mean_time=mea
 ```
 
 ```{r, echo=F, fig.cap="Średnie przetrzymywanie w zależności od gry.", out.width="100%"}
-ggplot(mean_keep_games%>%head(10)%>% arrange(mean_time), aes(factor(title, levels=title), mean_time)) + geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Średnia ilość dni")+coord_flip()
+ggplot(mean_keep_games %>% head(10) %>% arrange(mean_time), aes(factor(title, levels=title), mean_time)) +
+  geom_col(fill=color2) + labs(x ="Tytuł gry", y = "Średnia ilość dni") + coord_flip()
 ```
 
 ```{r, echo=F}
 mean_max <- mean_keep_games$mean_time[1]
-mean_max_game <- mean_keep_games%>%filter(mean_time==mean_max)
+mean_max_game <- mean_keep_games %>% filter(mean_time==mean_max)
 ```
 
 Najdłuższy średni czas przetrzymywania to **`r round(mean_max, 3)`** uzyskany przez **`r mean_max_game$title`**.
@@ -264,43 +290,145 @@ rentals_df3 <- dbGetQuery(con, dochod_rentals)
 
 ## Gry przynoszące największy dochód ze sprzedaży
 
-```{r echo=F}
-# 10 sprzadawanych gier przynoszącoych największy dochoód
-sales_df3_10 <- sales_df3 %>% select(-game_id) %>% #mutate(dochod=dochod*0.001)
-  slice_head(n=10)
-sales_df3_10$index <- seq_len(nrow(sales_df3_10))
-
-#poprawić wygląd, bo są za duże
-kable(sales_df3_10[,1:2], col.names=c("Tytuł gry","Dochód"), caption="Gry przynoszące największy dochód z sprzdaży.") %>% column_spec(1:2, width = "11em") %>%
-  kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>% row_spec(0, bold=T, background=color4)
-```
+<!-- ```{r echo=F} -->
+<!-- # 10 sprzadawanych gier przynoszącoych największy dochoód -->
+<!-- # sales_df3_10 <- sales_df3 %>% select(-game_id) %>% slice_head(n=10)  -->
+<!-- # sales_df3_10$index <- seq_len(nrow(sales_df3_10)) %>% rev() -->
 
 
-```{r echo=F}
-#dopracować ten wykres tak, żeby ładnie wyglądał - łącznie z kolorkami
-ggplot(sales_df3_10, aes(x=index,y=as.integer(dochod), fill=title)) + geom_col() +labs(x ="Gra", y = "Dochód", fill="Gra") + scale_fill_discrete(name="") + scale_x_discrete(guide = guide_axis(angle = 45)) +
- scale_fill_brewer(palette = "RdGy") 
+<!-- #raczej niepotrzebne, jak mamy wykres -->
+<!-- # kable(sales_df3_10[,1:2], col.names=c("Tytuł gry","Dochód"), caption="Gry przynoszące największy dochód z sprzdaży.", align='lc') %>% column_spec(1, width = "18em") %>% column_spec(2, width = "9em") %>% -->
+<!-- #   kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>% row_spec(0, bold=T, background=color1)  -->
+<!-- ``` -->
+
+
+```{r fig.cap = "Gry przynoszące największy dochód ze sprzedaży."}
+sales_df3_10 <- sales_df3 %>% select(-game_id) %>% slice_head(n=10)
+sales_df3_10 <- sales_df3_10 %>% arrange(desc(row_number()))
+
+ggplot(sales_df3_10, aes(x=factor(title, levels=title),y=dochod)) + geom_col(fill=color1) + 
+  labs(x ="Gra", y = "Dochód") + scale_x_discrete(guide = guide_axis(angle = 45)) +
+  coord_flip() 
 ```
 
 <!-- komentarz, które gry przyniosły największy dochód -->
 
 ## Gry przynoszące największy dochód z wypożyczeń
 
-```{r}
-# 10 wypożyczonych gier przynoszącoych największy dochoód
-rentals_df3_10 <- rentals_df3 %>% select(-game_id) %>% #mutate(dochod=dochod*0.001)
-  slice_head(n=10)
-rentals_df3_10$index <- seq_len(nrow(rentals_df3_10))
+<!-- ```{r} -->
+<!-- # 10 wypożyczonych gier przynoszącoych największy dochoód -->
+<!-- # rentals_df3_10 <- rentals_df3 %>% select(-game_id) %>% slice_head(n=10) -->
+<!-- # rentals_df3_10$index <- seq_len(nrow(rentals_df3_10))  -->
 
-kable(rentals_df3_10[,1:2], col.names=c("Tytuł gry","Dochód"), caption="Gry przynoszące największy dochód z wypożyczeń.") %>% column_spec(1:2, width = "11em") %>%
-  kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>% row_spec(0, bold=T, background=color4)
-```
+<!-- #raczej niepotrzebne, jak mamy wykres -->
+<!-- # kable(rentals_df3_10[,1:2], col.names=c("Tytuł gry","Dochód"), caption="Gry przynoszące największy dochód z wypożyczeń.",  align='lc') %>% column_spec(1, width = "18em") %>% column_spec(2, width = "9em") %>% -->
+<!-- #   kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>%  -->
+<!-- #   row_spec(0, bold=T, background=color1) -->
+<!-- ``` -->
 
-```{r}
-#dopracować ten wykres tak, żeby ładnie wyglądał - łącznie z kolorkami
+```{r fig.cap = " Gry przynoszące największy dochód z wypożyczeń."}
+rentals_df3_10 <- rentals_df3 %>% select(-game_id) %>% slice_head(n=10)
+rentals_df3_10 <- rentals_df3_10 %>% arrange(desc(row_number()))
 
-ggplot(rentals_df3_10, aes(x=index,y=as.integer(dochod), fill=title)) + geom_col() +labs(x ="Gra", y = "Dochód", fill="Gra") + scale_fill_discrete(name="") + scale_x_discrete(guide = guide_axis(angle = 45)) +
- scale_fill_brewer(palette = "RdGy") 
+ggplot(rentals_df3_10, aes(x=factor(title, levels=title),y=dochod)) + geom_col(fill=color4) +
+  labs(x ="Gra", y = "Dochód", fill="Gra") + scale_fill_discrete(name="") + 
+  scale_x_discrete(guide = guide_axis(angle = 45)) + coord_flip()
 ```
 
 <!-- komentarz, które gry przyniosły największy dochód -->
+
+# Przychody i dochody sklepu
+
+## Ranking Przychodów
+
+```{r}
+sales_income <- 'SELECT DATE_FORMAT(date, "%Y-%m") as ym, EXTRACT(YEAR FROM Finances.date) AS year, EXTRACT(MONTH FROM Finances.date) AS month, SUM(Finances.value) AS dochod
+FROM Sales
+INNER JOIN Finances USING(payment_id)
+INNER JOIN Inventory USING(inventory_id)
+GROUP BY year, month;'
+
+rentals_income <- 'SELECT DATE_FORMAT(date, "%Y-%m") as ym, EXTRACT(YEAR FROM Finances.date) AS year, EXTRACT(MONTH FROM Finances.date) AS month, SUM(Finances.value) AS dochod
+FROM Rentals
+INNER JOIN Finances USING(payment_id)
+INNER JOIN Inventory USING(inventory_id)
+GROUP BY year, month;'
+
+fee_income <- 'SELECT tournament_id, COUNT(*) AS num_players
+FROM Tournaments_results
+GROUP BY tournament_id'
+
+sales_income_df <- dbGetQuery(con, sales_income)
+rentals_income_df <- dbGetQuery(con, rentals_income)
+fee_income_df <- dbGetQuery(con, fee_income)
+```
+
+```{r}
+income <- merge(sales_income_df, rentals_income_df, by='ym',all=T) %>% select(-year.y, -month.y)
+colnames(income) <- c("ym","year","month","sale_income","rental_income")
+income$fee <- fee_income_df$num_players*20
+income$total <- income$sale_income + income$rental_income + income$fee
+
+kable(income[,c(1,4:7)], col.names=c("Data","Sprzadaż","Wypożyczenia","Turnieje","Przychód"), caption="Przychódy sklepu w rozbiciu na typ przychodu w poszczególnych miesiącach.", align='ccccc')  %>%
+  column_spec(1:5, width = "9em") %>% #column_spec(2, width = "6em") %>%
+  kable_styling(latex_options = c("HOLD_position","scale_down")) %>% row_spec(0, bold=T, background=color1)
+```
+
+```{r fig.cap = "Przychódy w poszczególnych miesiącach z podziałem na typ przychodu."}
+income_long <- income %>% select(-month, -year, -total) %>% mutate(across(sale_income:fee, as.integer)) %>%
+  pivot_longer(!ym, names_to = "type", values_to="value")
+income_long$ym <- factor(income_long$ym,levels=unique(income_long$ym))
+
+
+ggplot(income_long, aes(x=ym,y=as.integer(value), fill=as.factor(type))) + geom_col() + 
+  labs(x ="", y = "Przychód", fill="Typ przychodu") + 
+  scale_fill_manual(values=c(color3, color4, color1), labels = c("Wpisowe na turniej", "Wypożyczenia", "Sprzadaż")) + scale_x_discrete(guide = guide_axis(angle = 45)) #+
+  # geom_text(aes(label = as.integer(value)), size = 3,position = position_stack(vjust = 0.5), color="#E8E8E8")
+```
+
+## Dochód sklepu w poszczególnych miesiącach
+
+```{r}
+in_out <- 'SELECT DATE_FORMAT(date, "%Y-%m") as ym, EXTRACT(YEAR FROM date) AS year, EXTRACT(MONTH FROM date) AS month, in_out, SUM(value) AS income
+FROM Finances
+GROUP BY year, month, in_out'
+
+in_out_df <- dbGetQuery(con, in_out)
+```
+
+
+
+<!-- # Dochód sklepu w poszczególnych miesiącach - ogólny -->
+```{r}
+month_in_out <- in_out_df %>% filter(in_out == 1) %>% select(ym,month,income)
+colnames(month_in_out)[3] <- "ins"
+month_in_out$outs <- (in_out_df %>% filter(in_out == 0) %>% select(income))$income
+month_in_out$income <- month_in_out$ins - month_in_out$outs
+
+kable(month_in_out[,c(1,3:5)], col.names=c("Data","Przychód","Wydatki","Dochód"), caption="Całkowity dochód sklepu w poszczególnych miesiącach.",  align='cccc')  %>% column_spec(1:4, width = "9em") %>% 
+  kable_styling(latex_options = c("HOLD_position","scale_down")) %>% row_spec(0, bold=T, background=color1)
+```
+
+```{r fig.cap = "Całkowity dochód sklepu w poszczególnych miesiącach."}
+ggplot(month_in_out, aes(x=ym,y=income, fill=income)) + geom_col() +labs(x ="", y = "Dochód", fill="") + 
+  scale_colour_gradient2(low=color3, high=color4, aesthetics = "fill") + 
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+## Całkowity dochód
+
+```{r}
+# wybrać tylko te dane, gdzie rok jest obecny_rok - 1
+# year <- in_out_df$year %>% unique()
+dates <- in_out_df$ym %>% unique()
+start_end <- c(min(dates), max(dates))
+
+total_in <- in_out_df %>% filter(in_out == 1) %>% select(income) %>% sum()
+total_out <- in_out_df %>% filter(in_out == 0) %>% select(income) %>% sum()
+total_income <- total_in - total_out
+
+mean_income <- total_income/ nrow(in_out_df %>% filter(in_out == 1) %>% select(income))
+```
+
+Całkowity dochód firmy od **`r start_end[1]`** do **`r start_end[2]`** wyniósł: **`r total_income`** [zł]. Daje nam to średnio: **`r round(mean_income,2)`** [zł] dochodu na miesiąc.
+
