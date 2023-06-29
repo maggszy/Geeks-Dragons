@@ -1,164 +1,151 @@
 
 ## Schemat bazy danych i zależności funkcyjne w tabelach
 
-Klucze główne zaznaczamy przez pogrubienie 
+Klucze główne zaznaczamy przez pogrubienie.
 
 1. Tabela Customers: R(**customer_id**, first_name, last_name, birth_date, email, phone)
  
-
-    - customer_id : numer  identyfikacyjny klienta
-    - first_name: imię klienta
-    - last_name: nazwisko klienta
-    - birth_date: data urodzenia klienta
-    - email: email klienta
-    - phone: numer telefonu klienta
+    - customer_id [SMALLINT UNSIGNED] : numer  identyfikacyjny klienta
+    - first_name [VARCHAR(45)]: imię klienta
+    - last_name [VARCHAR(50)]: nazwisko klienta
+    - birth_date [DATE]: data urodzenia klienta
+    - email [VARCHAR(50)]: email klienta
+    - phone [VARCHAR(12)]: numer telefonu klienta
 
     $$\Sigma = \left\{ \text{customer\_id} \to \text{first\_name}, \text{customer\_id} \to  \text{last\_name}, \text{customer\_id} \to \text{birth\_name},\text{customer\_id} \to \text{email}, \text{email} \to \text{customer\_id},\text{customer\_id} \to \text{phone}, \text{phone} \to \text{customer\_id}   \right\} $$
 
-    Customer_id mówi nam jednoznacznie wszystko o danym kliencie, więc znamy jego imię, nazwisko, datę urodzin, email oraz numer telefonu. Email tak jak numer telefonu wyznacza na też jednoznacznie klienta więc pozwalają nam określić pozostałe. Zakładamy unikatowość email, numeru telefonu oraz customer_id. Połączenie reszty informacji o kliencie nie musi nam mówić jednoznacznie jaki to klient.
-
-
-
-
- 
-
-
-
+    Informacje o dokładnym kliencie możemy pozyskać przez customer_id. Dokładną identyfikację klienta zapewnia także jego email lub jego numer telefonu,ponieważ zakładamy, że każdy ma jeden unikalny numer telefony oraz adres email.
+    
 
 2. Tabela Employees: R(**employee_id**, first_name, last_name,start_work_date,end_work_date, email, phone, address_id)
-    - employee_id: numer identyfikacyjny pracownika
-    - first_name: imię pracownika
-    - last_name: nazwisko pracownika
-    - start_work_date: data zatrudnienia (rozpoczęcie pracy)
-    - end_work_date: data zakończenia pracy (data końca umowy)
-    - email: adres email pracownika
-    - phone: numer telefonu pracownika
-    - address_id (klucz obcy odwołujący się do tabeli Addresses): numer identyfikacyjny adresu.
+
+    - employee_id [SMALLINT UNSIGNED]: numer identyfikacyjny pracownika
+    - first_name [VARCHAR(45)]: imię pracownika
+    - last_name [VARCHAR(50)]: nazwisko pracownika
+    - start_work_date [DATE]: data zatrudnienia (rozpoczęcie pracy)
+    - end_work_date [DATE]: data zakończenia pracy
+    - email [VARCHAR(50)]: adres email pracownika
+    - phone [VARCHAR(12)]: numer telefonu pracownika
+    - address_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Addresses : numer identyfikacyjny adresu.
 
     $$\Sigma = \left\{ \text{employee\_id} \to \text{first\_name}, \text{employee\_id} \to  \text{last\_name}, \text{employee\_id} \to \text{start\_work\_date}, \text{employee\_id} \to \text{start\_work\_date},\text{employee\_id} \to \text{email}, \text{email} \to \text{employee\_id}, \text{employee\_id} \to \text{phone}, \text{phone} \to \text{employee\_id} , \text{employee\_id} \to \text{address\_id}    \right\} $$  
 
-    employee_id jednoznacznie definiuje pracownika więc pozwala określić jego imię, nazwisko, date zatrudnienia, datę końca pracy, jego adres email, telefon oraz address_id. Te same informację możemy uzyskać za pomocą jego adresu email jak i numeru telefonu, identycznie jak w przypadku tabeli Customers.
-
-
-
-
+    Pracownik jest jednoznaczne zdefiniowany przez employee_id. Tak jak w przypadku klientów, pracownika też możemy rozpoznać po jego numerze telefonu lub email.
+    
 3. Tabela Addresses: R(**address_id**, country, city, street,number,postal_code)
 
-    - adress_id: numer identyfikacyjny adresu.
-    - country: państwo
-    - city: miasto
-    - street: ulica
-    - number: numer mieszkania/lokalu
-    - postal_code: kod pocztowy.
+    - address_id [SMALLINT UNSIGNED]: numer identyfikacyjny adresu.
+    - country [VARCHAR(50)]: państwo
+    - city [VARCHAR(50)]: miasto
+    - street [VARCHAR(50)]: ulica
+    - number [SMALLINT UNSIGNED]: numer budynku
+    - postal_code [VARCHAR(10)]: kod pocztowy.
 
     $$\Sigma = \left\{\text{adress\_id} \to \text{country}, \text{adress\_id} \to \text{city},\text{adress\_id} \to \text{street},\text{adress\_id} \to \text{number}\text{adress\_id} \to \text{postal\_code}, \text{country} + \text{city} +\text{street} +\text{number} + \text{postal\_code} \to \text{adress\_id} \right\}$$
 
     Adres jest dokładnie, jednoznacznie wyznaczony dla danego adress_id. Pozostałe pola tylko razem wskażą nam dokładny adres. 
     
-
-
-4. Tabela Games: R(**game_id**,title, description, release_year,min_players,max_players,play_time,min_age,price)
+4. Tabela Games: R(**game_id**,title, release_year,min_players,max_players,play_time,min_age,type,price)
     
-    - game_id: numer identyfikacyjny gry
-    - title: oryginalny tytuł gry
-    - description: opis gry
-    - release_year: rok wydania gry
-    - min_players: minimalna liczba graczy
-    - max_players: maksymalna liczba graczy
-    - play_time: szacowany czas gry
-    - min_age: wiek minimalny do zagrania w grę
-    - price: cena za kupno gry
+    - game_id [SMALLINT UNSIGNED]: numer identyfikacyjny gry
+    - title [VARCHAR(100)]: oryginalny tytuł gry
+    - release_year [DATE]: rok wydania gry
+    - min_players [TINYINT UNSIGNED]: minimalna liczba graczy
+    - max_players [TINYINT UNSIGNED]: maksymalna liczba graczy
+    - play_time [SMALLINT UNSIGNED]: szacowany czas gry w minutach
+    - min_age [TINYINT UNSIGNED]: wiek minimalny do zagrania w grę
+    - type [VARCHAR(18)]:  typ gry tzn czy jest to gr czy rozszerzenie do gry 
+    - price [DECIMAL]: cena za kupno gry
 
-    $$\Sigma = \left\{ \text{game\_id} \to \text{release\_year},\text{game\_id} \to \text{min\_players},\text{game\_id} \to \text{max\_players},\text{game\_id} \to \text{play\_time}, \text{game\_id} \to \text{min\_age}, \text{game\_id} \to \text{price}, \text{game\_id} \to \text{title},\text{game\_id} \to \text{description},\text{title} + \text{description} \to \text{game\_id} \right\}$$
+    $$\Sigma = \left\{ \text{game\_id} \to \text{title}, \text{game\_id} \to \text{release\_year},\text{game\_id} \to \text{min\_players},\text{game\_id} \to \text{max\_players},\text{game\_id} \to \text{play\_time}, \text{game\_id} \to \text{min\_age}, \text{game\_id} \to \text{price}, ,\text{game\_id} \to \text{description} \right\}$$
 
-    Game_id, tak jak połączenie tytułu i opisu określa nam jednoznacznie grę.
+   Gra jest wyznaczona jednoznacznie przez game_id. Połączenie wszystkich pozostałych informacji nie musi nam jednoznacznie określić gry ( Tytuły nie muszą być unikatowe)
 
 
 5. Tabela Inventory: R(**inventory_id**, game_id,type)
 
-    - inventory_id: numer identyfikacyjny inwentarza
-    - game_id (klucz obcy odwołujący się do tabeli Games): numer identyfikacyjny grę
-    - type: przeznaczenie gry na magazynie ( czy na sprzedaż, czy na wypożyczenie, czy na turniej)
+    - inventory_id [SMALLINT UNSIGNED]: numer identyfikacyjny inwentarza
+    - game_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Games): numer identyfikacyjny grę
+    - type [CHAR(1)]: przeznaczenie gry na magazynie ( czy na sprzedaż, czy na wypożyczenie, czy na turniej)
 
     $$ \Sigma = \left\{ \text{inventory\_id} \to \text{game\_id} , \text{inventory\_id} \to \text{type} \right\} $$
 
-    Inventory id wyznacza nam jednoznacznie jaka to gra i jakie jest jej przeznaczenie. game_id mówi nam co to za gra, type mówi jakie jest przeznaczenie te gry. Możemy mieć kilka tych samych gier z tym samym lub inny przeznaczeniem, dlatego z game_id i typu nie wynika inventory_id.
+    Gra w magazynie jest wyznaczona jednoznacznie przez inventory_id. Reszta informacji nie pozwala nam tego określić ponieważ możemy mieć kilka takich samych tytułów o takim samym przeznaczeniu.
+    
+6. Tabela Tournaments: R(**tournament_id**, game_id,max_players,entry_fee,prize)
 
+    - tournament_id [SMALLINT UNSIGNED]: numer identyfikacyjny turnieju
+    - game_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Games): numer identyfikacyjny grę w jaką się gra na turnieju
+    - max_players [TINYINT UNSIGNED]: maksymalna liczba graczy na turnieju
+    - entry_fee [DECIMAL]: wpisowe
+    - prize [DECIMAL]: nagroda za turniej zamiast 
 
-6. Tabela Tournaments: R(**tournament_id**, game_id,max_players,entry_fee,reward )
+    $$ \Sigma = \left\{ \text{tournament\_id} \to \text{game\_id}, \text{tournament\_id} \to \text{max\_players},\text{tournament\_id} \to \text{entry\_fee}, \text{tournament\_id} \to \text{prize} \right\} $$
 
-    - tournament_id: numer identyfikacyjny turnieju
-    - game_id (klucz obcy odwołujący się do tabeli Games): numer identyfikacyjny grę w jaką się gra na turnieju
-    - max_players: maksymalna liczba graczy na turnieju
-    - entry_fee: wpisowe
-    - reward: nagroda za turniej
-
-    $$ \Sigma = \left\{ \text{tournament\_id} \to \text{game\_id}, \text{tournament\_id} \to \text{max\_players},\text{tournament\_id} \to \text{entry\_fee}, \text{tournament\_id} \to \text{reward} \right\} $$
-
-    Tournament id  wyznacza jednoznacznie gre, ilość graczy, wpisowe oraz nagrodę w turnieju, odwrotna relacja nie zachodzi. Zakładamy, że nagroda oraz wpisowe bezpośrednio  nie wynikają z siebie ani z gry rozgrywanej na turnieju.
+    Turniej jest jednoznacznie wyznaczony jedynie przez tournament_id. Zakładamy, że nagroda nie jest bezpośrednio zależna iod wpisowego i liczby graczy.
 
 7. Tabela Tournament_schedule: R(**tournament_id**, date)
-    - tournament_id (klucz obcy odwołujący się do tabeli Tournaments): numer identyfikacyjny turnieju
-    - date: data turnieju
+
+    - tournament_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Tournaments): numer identyfikacyjny turnieju
+    - date [DATE]: data turnieju
 
     $$ \Sigma = \left\{ \text{tournament\_id} \to \text{date} \right\} $$
 
     Tabela łącząca turniej z jego datą. W jeden dzień może odbywać się więcej niż 1 turniej
 
 8. Tabela Tournaments_results: R(**tournament_id, place**, customer_id)
-    - tournament_id (klucz obcy odwołujący się do tabeli Tournaments): numer identyfikacyjny turnieju
-    - place: miejsce zajęte w turnieju przez gracza (klienta)
-    - customer_id (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
+
+    - tournament_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Tournaments): numer identyfikacyjny turnieju
+    - place [SMALLINT UNSIGNED]: miejsce zajęte w turnieju przez gracza (klienta)
+    - customer_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
     $$ \Sigma = \left\{ \text{tournament\_id} + \text{place} \to \text{client\_id} \right\} $$
 
-    Tournament id w połączeniu z place wyznacza nam jednoznacznie osobę, która te miejsce zajęła w turnieju. Zakładamy, że w turniejach nie ma miejsc ex aequo.
+    Identyfikator turnieju  w połączeniu z miejscem wyznacza nam jednoznacznie osobę, która te miejsce zajęła w turnieju. Zakładamy, że w turniejach nie ma miejsc ex aequo.
 
-9. Tabela Finances: R(**payment_id** , in_out, value, date, title)
+9. Tabela Finances: R(**payment_id** , in_out, value, date)
 
-    - payment_id: numer identyfikacyjny płatności
-    - in_out: czy jest to płatność czy przychód
-    - value: wartość płatności
-    - date: data płatności
-    - title: tytuł płatności
+    - payment_id [MEDIUMINT UNSIGNED]: numer identyfikacyjny płatności
+    - in_out [TINYINT]: czy jest to płatność czy przychód
+    - value [DECIMAL]: wartość płatności
+    - date [DATE]: data płatności
 
-    $$ \Sigma = \left\{ \text{payment\_id} \to \text{in\_out}, \text{payment\_id} \to \text{value},\text{payment\_id} \to \text{date}, \text{payment\_id} \to \text{title} \right\} $$
+    $$ \Sigma = \left\{ \text{payment\_id} \to \text{in\_out}, \text{payment\_id} \to \text{value},\text{payment\_id} \to \text{date} \right\} $$
 
-    Tylko payment id wyznacza nam jednoznacznie przepływ pieniężny. 
+    Tylko payment id wyznacza nam jednoznacznie przepływ pieniężny.
 
 10. Tabela Payoffs: R(**payment_id**, employee_id)
 
-    - payment_id (klucz obcy odwołujący się do tabeli Finances): numer identyfikacyjny płatności  
-    - employee_id (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
+    - payment_id [MEDIUMINT UNSIGNED] (klucz obcy odwołujący się do tabeli Finances): numer identyfikacyjny płatności  
+    - employee_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
     $$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id}  \right\} $$
     
-    payment id wyznacza nam jednoznacznie przypisanego do tej płatności pracownika. Relacja w drugą stronę nie zachodzi bo pracownik może być przypisany do wielu płatności.
-    
-
+    Każda wypłata jest jednoznacznie zdefinowana przez payment_id i ma przypisanego pracownika. Relacją w drugą stronę nie zachodzi ponieważ pracownik może mieć kilka wypłat. 
 
 11. Tabela Rentals: R(**rental_id**,payment_id,employee_id, customer_id,inventory_id,rental_date,return_date)
 
-    - rental_id: numer identyfikacyjny wypożyczenia
-    - payment_id (klucz obcy odwołujący się do tabeli Finances) : numer identyfikacyjny płatności
-    - employee_id (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
-    - customer_id (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
-    - inventory_id (klucz obcy odwołujący się do tabeli Inventory): numer identyfikacyjny inwentarza
-    - rental_date: data wypożyczenia gry
-    - return_date: data oddania gry
+    - rental_id [SMALLINT UNSIGNED]: numer identyfikacyjny wypożyczenia
+    - payment_id [MEDIUMINT UNSIGNED] (klucz obcy odwołujący się do tabeli Finances) : numer identyfikacyjny płatności
+    - employee_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
+    - customer_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
+    - inventory_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Inventory): numer identyfikacyjny inwentarza
+    - rental_date [DATE]: data wypożyczenia gry
+    - return_date [DATE]: data oddania gry
 
-    $$ \Sigma = \left\{\text{rental\_id} \to \text{payment\_id}, \text{rental\_id} \to \text{employee\_id},\text{rental\_id} \to \text{customer\_id},\text{rental\_id} \to \text{inventory\_id},\text{rental\_id} \to \text{rental\_date},\text{rental\_id} \to \text{return\_date}, \text{payment\_id}} \to \text{rental\_id} \right\} $$
+    $$\Sigma = \left\{\text{rental\_id} \to \text{payment\_id}, \text{rental\_id} \to \text{employee\_id},\text{rental\_id} \to \text{customer\_id},\text{rental\_id} \to \text{inventory\_id},\text{rental\_id} \to \text{rental\_date},\text{rental\_id} \to \text{return\_date}, \text{payment\_id} \to \text{rental\_id} \right\}$$
 
-    Rental id jednoznacznie nam wyznacza wypożyczenie, tak jak payment id.
+   Wypożyczenie jest jednoznacznie wyznaczone przez rental_id, tak jak payment id. Pozostałe pola nie muszą jednoznacznie wyznaczyć wypożyczenia.
 
-12. Tabela Sales: R(**payment_id**,employee_id, customer_id,inventory_id)
+12. Tabela Sales: R(**sales_id**,payment_id,employee_id, customer_id,inventory_id)
 
-    - payment_id (klucz obcy odwołujący się do tabeli Finances) : numer identyfikacyjny płatności
-    - employee_id (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
-    - customer_id (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
-    - inventory_id (klucz obcy odwołujący się do tabeli Inventory): numer identyfikacyjny inwentarza
+    - sales_id [SMALLINT UNSIGNED]: numer identyfikacyjny sprzedaży gry 
+    - payment_id [MEDIUMINT UNSIGNED] (klucz obcy odwołujący się do tabeli Finances) : numer identyfikacyjny płatności
+    - employee_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Employees): numer identyfikacyjny pracownika
+    - customer_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Customers): numer identyfikacyjny klienta
+    - inventory_id [SMALLINT UNSIGNED] (klucz obcy odwołujący się do tabeli Inventory): numer identyfikacyjny inwentarza
 
-    Z payment id wynika jednoznacznie jaka gra została sprzedana przez kogo i komu. Nie ma odwrotnych relacji.
-$$ \Sigma = \left\{ \text{payment\_id} \to \text{employee\_id},\text{payment\_id} \to \text{customer\_id},\text{payment\_id} \to \text{game\_id}   \right\} $$
-
+    Każda sprzedaż ma unikatowy sales_id. Transakcja sprzedaży może być też jednoznacznie wyznaczona przez payment_id
+    
+    $$ \Sigma = \left\{ \text{sales\_id} \to \text{payment\_id}, \text{sales\_id} \to \text{employee\_id},\text{sales\_id} \to \text{customer\_id},\text{sales\_id} \to \text{game\_id} ,  \text{payment\_id} \to \text{sales\_id}  \right\} $$
 
 ## Postać normalna bazy danych
 
