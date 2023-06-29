@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = F, fig.pos="H",out.width = "75%", f
 library(RMariaDB)
 library(ggplot2)
 library(dplyr)
-library(dbplyr)
+library(dbplyr) 
 library(tidyr)
 library(kableExtra)
 library(emojifont)
