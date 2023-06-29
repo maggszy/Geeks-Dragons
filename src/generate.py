@@ -150,7 +150,6 @@ def generate_payoffs():
     temp_payoff["date"] = temp_payoff.apply(lambda row: payoff_date(row), axis = 1)
     temp_payoff = temp_payoff.drop("month", axis = 1)
     temp_payoff["in_out"] = np.repeat(0, temp_payoff.shape[0])
-    temp_payoff["title"] = np.repeat("Payoff", temp_payoff.shape[0])
     temp_payoff = temp_payoff.drop("employee_id", axis = 1)
     return payoffs_tbl, temp_payoff
 
@@ -268,7 +267,6 @@ def temp_rent_payments(rentals_tbl):
     duration = end - start
     temp_rent_pay["value"] = duration.dt.days * 10
     temp_rent_pay["in_out"] = np.repeat(1, temp_rent_pay.shape[0])
-    temp_rent_pay["title"] = np.repeat("Payment for rental", temp_rent_pay.shape[0])
     return temp_rent_pay
 
 def generate_sales_tbl(customers_tbl, last_rent_inventory_id):
@@ -295,7 +293,6 @@ def temp_sales_payments(sales_tbl, games_tbl):
     temp_sales_pay["date"] = sales_tbl["date"]
     temp_sales_pay["value"] = sales_with_games["Price"]
     temp_sales_pay["in_out"] = np.repeat(1, temp_sales_pay.shape[0])
-    temp_sales_pay["title"] = np.repeat("Payment for purchase", temp_sales_pay.shape[0])
     return temp_sales_pay
 
 def temp_entry_fee_payments():
@@ -305,7 +302,6 @@ def temp_entry_fee_payments():
     temp_fee_pay["value"] = np.repeat(ENTRY_FEE, temp_fee_pay.shape[0])
     temp_fee_pay["payment_id"] = random.sample(range(50001, 90000), temp_fee_pay.shape[0])
     temp_fee_pay["in_out"] = np.repeat(1, temp_fee_pay.shape[0])
-    temp_fee_pay["title"] = np.repeat("Entry fee", temp_fee_pay.shape[0])
     return temp_fee_pay
 
 def concat_payments(temp_payoffs_pay, temp_sales_pay, temp_rent_pay, temp_fee_pay ):

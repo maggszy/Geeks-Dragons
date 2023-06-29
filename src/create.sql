@@ -40,7 +40,6 @@ CREATE OR REPLACE  TABLE Finances
   in_out     TINYINT(1)   NOT NULL,
   value      DECIMAL      NOT NULL,
   date       DATE         NOT NULL,
-  title      VARCHAR(100) NOT NULL,
   PRIMARY KEY (payment_id)
 );
 
