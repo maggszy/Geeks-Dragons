@@ -3,8 +3,8 @@
     "version": "2.2.11",
     "width": 2000,
     "height": 2000,
-    "scrollTop": -771,
-    "scrollLeft": -1071,
+    "scrollTop": -395,
+    "scrollLeft": -206,
     "zoomLevel": 0.8,
     "show": {
       "tableComment": true,
@@ -495,7 +495,7 @@
           {
             "name": "number",
             "comment": "",
-            "dataType": "SMALLINT UNSIGNED",
+            "dataType": "VARCHAR(10)",
             "default": "",
             "option": {
               "autoIncrement": false,
@@ -510,7 +510,7 @@
               "pfk": false,
               "widthName": 60,
               "widthComment": 60,
-              "widthDataType": 137.8017578125,
+              "widthDataType": 87.71875,
               "widthDefault": 60
             },
             "id": "ff0d77fd-2eba-406f-a1e3-9831aa716a08"
@@ -540,10 +540,10 @@
           }
         ],
         "ui": {
-          "active": false,
+          "active": true,
           "left": 75.3711,
           "top": 867.3793,
-          "zIndex": 129,
+          "zIndex": 163,
           "widthName": 63.419921875,
           "widthComment": 60
         },

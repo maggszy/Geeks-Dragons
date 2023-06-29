@@ -38,7 +38,7 @@ Klucze główne zaznaczamy przez pogrubienie.
     - country [VARCHAR(50)]: państwo
     - city [VARCHAR(50)]: miasto
     - street [VARCHAR(50)]: ulica
-    - number [SMALLINT UNSIGNED]: numer budynku
+    - number [VARCHAR(10)]: numer budynku
     - postal_code [VARCHAR(10)]: kod pocztowy.
 
     $$\Sigma = \left\{\text{adress\_id} \to \text{country}, \text{adress\_id} \to \text{city},\text{adress\_id} \to \text{street},\text{adress\_id} \to \text{number}\text{adress\_id} \to \text{postal\_code}, \text{country} + \text{city} +\text{street} +\text{number} + \text{postal\_code} \to \text{adress\_id} \right\}$$
