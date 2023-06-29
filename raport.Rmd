@@ -11,7 +11,7 @@ output:
 \renewcommand{\tablename}{Tabela}
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.pos="H",out.width = "75%", fig.align = 'center')
+knitr::opts_chunk$set(echo = TRUE, warning = F, fig.pos="H",out.width = "75%", fig.align = 'center')
 library(RMariaDB)
 library(ggplot2)
 library(dplyr)
@@ -238,3 +238,69 @@ mean_max_game <- mean_keep_games%>%filter(mean_time==mean_max)
 ```
 
 Najdłuższy średni czas przetrzymywania to **`r round(mean_max, 3)`** uzyskany przez **`r mean_max_game$title`**.
+
+# Rankingi gier przynoszących największe zyski
+
+```{r echo=F}
+dochod_sales <- 'SELECT Games.game_id, Games.title, SUM(Finances.value) AS dochod, COUNT(*) AS game_num
+FROM Sales
+INNER JOIN Finances USING(payment_id)
+INNER JOIN Inventory USING(inventory_id)
+INNER JOIN Games USING(game_id)
+GROUP BY Games.game_id
+ORDER BY dochod DESC;'
+
+dochod_rentals <- 'SELECT Games.game_id, Games.title, SUM(Finances.value) AS dochod, COUNT(*) AS game_num
+FROM Rentals
+INNER JOIN Finances USING(payment_id)
+INNER JOIN Inventory USING(inventory_id)
+INNER JOIN Games USING(game_id)
+GROUP BY Games.game_id
+ORDER BY dochod DESC;'
+
+sales_df3 <- dbGetQuery(con, dochod_sales)
+rentals_df3 <- dbGetQuery(con, dochod_rentals)
+```
+
+## Gry przynoszące największy dochód ze sprzedaży
+
+```{r echo=F}
+# 10 sprzadawanych gier przynoszącoych największy dochoód
+sales_df3_10 <- sales_df3 %>% select(-game_id) %>% #mutate(dochod=dochod*0.001)
+  slice_head(n=10)
+sales_df3_10$index <- seq_len(nrow(sales_df3_10))
+
+#poprawić wygląd, bo są za duże
+kable(sales_df3_10[,1:2], col.names=c("Tytuł gry","Dochód"), caption="Gry przynoszące największy dochód z sprzdaży.") %>% column_spec(1:2, width = "11em") %>%
+  kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>% row_spec(0, bold=T, background=color4)
+```
+
+
+```{r echo=F}
+#dopracować ten wykres tak, żeby ładnie wyglądał - łącznie z kolorkami
+ggplot(sales_df3_10, aes(x=index,y=as.integer(dochod), fill=title)) + geom_col() +labs(x ="Gra", y = "Dochód", fill="Gra") + scale_fill_discrete(name="") + scale_x_discrete(guide = guide_axis(angle = 45)) +
+ scale_fill_brewer(palette = "RdGy") 
+```
+
+<!-- komentarz, które gry przyniosły największy dochód -->
+
+## Gry przynoszące największy dochód z wypożyczeń
+
+```{r}
+# 10 wypożyczonych gier przynoszącoych największy dochoód
+rentals_df3_10 <- rentals_df3 %>% select(-game_id) %>% #mutate(dochod=dochod*0.001)
+  slice_head(n=10)
+rentals_df3_10$index <- seq_len(nrow(rentals_df3_10))
+
+kable(rentals_df3_10[,1:2], col.names=c("Tytuł gry","Dochód"), caption="Gry przynoszące największy dochód z wypożyczeń.") %>% column_spec(1:2, width = "11em") %>%
+  kable_styling(latex_options = c("HOLD_position","scale_down"),position = "center") %>% row_spec(0, bold=T, background=color4)
+```
+
+```{r}
+#dopracować ten wykres tak, żeby ładnie wyglądał - łącznie z kolorkami
+
+ggplot(rentals_df3_10, aes(x=index,y=as.integer(dochod), fill=title)) + geom_col() +labs(x ="Gra", y = "Dochód", fill="Gra") + scale_fill_discrete(name="") + scale_x_discrete(guide = guide_axis(angle = 45)) +
+ scale_fill_brewer(palette = "RdGy") 
+```
+
+<!-- komentarz, które gry przyniosły największy dochód -->
