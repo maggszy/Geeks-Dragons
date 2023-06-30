@@ -90,7 +90,7 @@ W folderze $Raport$ znajdują się plik do generowania raportu oraz plik z gotow
 
 Kolejnym folderem jest $scr$. W środku znajdują się pliki, które służą do generowania i tworzenia bazy danych. Plik $\_\_init\_\_.py$, potrzebny jest do możliwości importowania pythonowych funkcji z innych plików znajdujących się w tym samym folderze. Plik $create.sql$ tworzy nam tabele do bazy danych. Plik $generate.py$ zawiera funkcje, przy pomocy których generujemy dane do wypełnienia stworzonej wcześniej bazę danych.
 
-Plik $main.py$ służy do wgrania tabel z danymi na serwer.
+Plik $main.py$ służy do wygenerowania tabel z danymi oraz wgrania ich na serwer.
 
 <!-- jak dojdzie coś później, to trzeba zupdatować -->
 

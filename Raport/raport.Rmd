@@ -262,7 +262,7 @@ old_recent <- now_rented_games%>%arrange(rental_date)%>%head(1)
 new_recent <- now_rented_games%>%arrange(desc(rental_date))%>%head(1)
 ```
 
-Aktualnie jest **`r now_rented_games%>%count()`** wypożyczonych gier. Najnowsze wypożyczenie pochodzi z `r format(new_recent$rental_date, "%d-m-%Y")`. Najstarsze wypożyczenie pochodzi z `r format(old_recent$rental_date, "%d-%m-%Y")`.
+Aktualnie jest **`r now_rented_games%>%count()`** wypożyczonych gier. Najnowsze wypożyczenie pochodzi z `r format(new_recent$rental_date, "%d-%m-%Y")`. Najstarsze wypożyczenie pochodzi z `r format(old_recent$rental_date, "%d-%m-%Y")`.
 
 ## Najdłużejsze przetrzymywania
 
@@ -340,7 +340,7 @@ Gry przychoszące największy dochód ze sprzedaży to tytuły gier, których sp
 sales_df3_10 <- sales_df3 %>% select(-game_id) %>% slice_head(n=10)
 # sales_df3_10$index <- seq_len(nrow(sales_df3_10)) %>% rev()
 
-kable(sales_df3_10[,c(1,3)], col.names=c("Tytuł gry","Ilość"), caption=" \\label{sales_top} Ilość sprzedanych gier, które przyniosły największy dochód z sprzdaży.", align='lc') %>% column_spec(1, width = "30em") %>% column_spec(2, width = "8em") %>%
+kable(sales_df3_10[,c(1,3)], col.names=c("Tytuł gry","Ilość"), caption="\\label{sales_top} Ilość sprzedanych gier, które przyniosły największy dochód z sprzdaży.", align='lc') %>% column_spec(1, width = "30em") %>% column_spec(2, width = "8em") %>%
   kable_styling(latex_options = c("HOLD_position"),position = "center") %>% row_spec(0, bold=T, background=color1)
 ```
 W tabeli \ref{sales_top} znajdują się tytuły najbardziej dochodowych gier ze sprzedaży wraz z ilością sprzedanych egzemplarzy.
@@ -370,7 +370,7 @@ ggplot(rentals_df3_10, aes(x=factor(title, levels=title),y=dochod)) + geom_col(f
    coord_flip()
 ```
 
-Najbardziej dochodową grą z wypożyczeń była gra **`r rentals_df3_10$title[10]`**. Wypożyczono ją **`r as.numeric(rentals_df3_10$game_num[10])`**. Dochód z niej wyniósł **`r rentals_df3_10$dochod[10]` zł**.
+Najbardziej dochodową grą z wypożyczeń była gra **`r rentals_df3_10$title[10]`**. Wypożyczono ją **`r as.numeric(rentals_df3_10$game_num[10])`** razy. Dochód z niej wyniósł **`r rentals_df3_10$dochod[10]` zł**.
 
 
 # Przychody i dochody sklepu
@@ -419,7 +419,7 @@ rental_max <- income %>% select(ym, rental_income) %>% slice_max(rental_income)
 total_max <- income %>% select(ym, total) %>% slice_max(total)
 
 kable(income[,c(1,4:7)], col.names=c("Data","Sprzadaż","Wypożyczenia","Turnieje","Przychód"), caption="\\label{income} Przychody sklepu w rozbiciu na typ przychodu w poszczególnych miesiącach.", align='ccccc')  %>%
-  column_spec(1:5, width = "9em") %>%
+  column_spec(1:5, width = "7em") %>%
   kable_styling(latex_options = c("HOLD_position")) %>% row_spec(0, bold=T, background=color1)
 ```
 
@@ -458,7 +458,7 @@ income_min <- month_in_out %>% select(ym, income) %>% slice_min(income)
 
 
 kable(month_in_out[,c(1,3:5)], col.names=c("Data","Przychód","Wydatki","Dochód"), caption=" \\label{tab_6_2} Całkowity dochód sklepu w poszczególnych miesiącach.",  align='cccc')  %>% column_spec(1:4, width = "9em") %>% 
-  kable_styling(latex_options = c("HOLD_position","scale_down")) %>% row_spec(0, bold=T, background=color1)
+  kable_styling(latex_options = c("HOLD_position")) %>% row_spec(0, bold=T, background=color1)
 ```
 
 W tabeli \ref{tab_6_2} znajdują się przychody i wydatki sklepu oraz całkowity uzyskany dochód w poszczególnych miesiącach. Największy dochód sklep uzyskał **`r income_max[1]`** i wyniósł on **`r income_max[2]` zł**. Najgorszym miesiącem działalności sklepu okazał się **`r income_min[1]`**. Był to miesiąc, w którym uzyskano najmniejszy dochód w wysokości **`r income_min[2]` zł**.
