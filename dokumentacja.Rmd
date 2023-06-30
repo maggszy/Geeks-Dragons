@@ -265,6 +265,7 @@ R(**sales_id**,payment_id,employee_id, customer_id,inventory_id)
  \end{multline*}
 
 Każda sprzedaż ma unikatowy sales_id. Transakcja sprzedaży może być też jednoznacznie wyznaczona przez payment_id.
+
 # Postać normalna bazy danych
 
 Jak możemy zauważyć w naszej bazie danych w każdej tabeli wszystkie nietrywialne relację zaczynają się od nadklucza wię spełnia postać BCNF z czego wynika także że spełnia postać normalną EKNF.
