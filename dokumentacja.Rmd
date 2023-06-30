@@ -103,17 +103,21 @@ Plik $main.py$ służy do wgrania tabel z danymi na serwer.
 
 # Schemat bazy danych i zależności funkcyjne w tabelach
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.7]{assets/schemat_bazy_danych.pdf}
-    \caption{Schemt bazy danych}
-\end{figure}
+<!-- \begin{figure}[H] -->
+<!--     \centering -->
+<!--     \includegraphics[scale=0.7]{assets/schemat_bazy_danych.pdf} -->
+<!--     \caption{Schemt bazy danych} -->
+<!-- \end{figure} -->
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.7]{C:/Users/mkarc/studia/bazy danych/bazy_danych/schemat_obraz.jpg}
-    \caption{Schemt bazy danych}
-\end{figure}
+<!-- \begin{figure}[H] -->
+<!--     \centering -->
+<!--     \includegraphics[scale=0.7]{C:/Users/mkarc/studia/bazy danych/bazy_danych/schemat_obraz.jpg} -->
+<!--     \caption{Schemt bazy danych} -->
+<!-- \end{figure} -->
+
+
+![Alt text](assets/schemat_obraz.jpg "Schemat bazy danych")
+
 
 Klucze główne zaznaczamy przez pogrubienie.
 
