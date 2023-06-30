@@ -4,6 +4,7 @@ author: "Urszula Spik, Natalia Jelito, Maciej Karczewski, Magdalena Szymkowiak"
 date: "`r Sys.Date()`"
 output: 
   pdf_document:
+    extra_dependencies: ["dirtree","hyperref"]
     number_sections: true
 ---
 
@@ -11,22 +12,81 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Spis użytych technologii
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Do stworzenia projektu zostały użyte następujące technologie:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+  1. Tworzenie bazy danych:
+      * Python z bibliotekami:
+        - pandas,
+        - numpy,
+        - random,
+        - datetime,
+        - urllib.parse,
+        - sqlalchemy,
+        - itertools,
+        - faker,
+      * MariaDB,
+    
+  2. Analiza danych:
+      * R z bibliotekami:
+        - RMariaDB,
+        - ggplot2, 
+        - dplyr, 
+        - dbplyr, 
+        - tidyr, 
+        - kableExtra,
+        - emojifont, 
+        - stringr,
+        - colorspace,
+        - wesanderson.
+      
+  3. Raport i dokumentacja:
+      * Rmarkdown
+    
+  <!-- 4. Tworzenie schematu baz danych: -->
+  <!--    * Miro -->
+  
+# Lista plików i opis ich zawartości
 
-```{r cars}
-summary(cars)
-```
+W folderze **bazy_danych** znajdują się pliki tworzące cały projekt. Struktura zawartości folderu wygląda następująco 
 
-## Including Plots
 
-You can also embed plots, for example:
+<!-- dokończyć - sprawdzić przed wysłaniem żeby było zgodne z tym co faktycznie wyślemy -->
+\dirtree{%
+.1 bazy$\_$danych.
+.2 data.
+.3 address.csv.
+.3 english$\_$first$\_$name.csv.
+.3 english$\_$last$\_$name.csv.
+.3 games.csv.
+.3 polish$\_$female$\_$last$\_$name.csv.
+.3 polish$\_$female$\_$name.csv.
+.3 polish$\_$male$\_$last$\_$name.csv.
+.3 polish$\_$female$\_$name.csv.
+.2 dokumentacja.pdf.
+.2 Raport.
+.3 raport.Rmd.
+.3 raport.pdf.
+.2 scr.
+.3 $\_\_$init$\_\_$.py.
+.3 create.sql.
+.3 generate.py.
+.2 main.py.
+}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+W folderze $data$ znajdują się pliki $.csv$, których użyliśmy do generowania adresów,imion, nazwisk zarówno klientów sklepu jak i też samych pracowników. Użyliśmy również ich do generowania gier, które można wypożyczyć albo kupić.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Plik $dokumentacja.pdf$ jest plikiem zawierającym dokumentacje.
+
+W folderze $Raport$ znajdują się plik do generowania raportu oraz plik z gotowym już raportem.
+
+Kolejnym folderem jest $scr$. W środku znajdują się pliki, które służą do generowania i tworzenia bazy danych. Plik $\_\_init\_\_.py$, potrzebny jest do możliwości importowania pythonowych funkcji z innych plików znajdujących się w tym samym folderze. Plik $create.sql$ tworzy nam tabele do bazy danych. Plik $generate.py$ zawiera funkcje, przy pomocy których generujemy dane do wypełnienia stworzonej wcześniej bazę danych.
+
+Plik $main.py$ służy do wgrania tabel z danymi na serwer.
+
+<!-- jak dojdzie coś później, to trzeba zupdatować -->
+
+
+# Kolejność i sposób uruchamiania plików, aby uzyskać gotowy projekt
+
