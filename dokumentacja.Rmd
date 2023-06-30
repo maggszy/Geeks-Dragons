@@ -68,14 +68,15 @@ W folderze **bazy_danych** znajdują się pliki tworzące cały projekt. Struktu
 .2 Raport.
 .3 raport.Rmd.
 .3 raport.pdf.
-.2 scr.
+.2 src.
 .3 $\_\_$init$\_\_$.py.
 .3 create.sql.
 .3 generate.py.
 .2 main.py.
+.2 requirements.txt.
 }
 
-W folderze $data$ znajdują się pliki $.csv$, których użyliśmy do generowania adresów,imion, nazwisk zarówno klientów sklepu jak i też samych pracowników. Użyliśmy również ich do generowania gier, które można wypożyczyć albo kupić.Źródła danych:
+W folderze $data$ znajdują się pliki $.csv$, których użyliśmy do generowania adresów,imion, nazwisk zarówno klientów sklepu jak i też samych pracowników. Użyliśmy również ich do generowania gier, które można wypożyczyć albo kupić. Źródła danych:
 
   - $address.csv$ - https://bip.um.wroc.pl/artykul/389/50007/aktualne-wykazy-nazw-ulic-i-adresow
   - $english\_first\_name.csv$ - https://catalog.data.gov/dataset/popular-baby-names/resource/02e8f55e-2157-4cb2-961a-2aabb75cbc8b
@@ -88,18 +89,22 @@ Plik $dokumentacja.pdf$ jest plikiem zawierającym dokumentacje.
 
 W folderze $Raport$ znajdują się plik do generowania raportu oraz plik z gotowym już raportem.
 
-Kolejnym folderem jest $scr$. W środku znajdują się pliki, które służą do generowania i tworzenia bazy danych. Plik $\_\_init\_\_.py$, potrzebny jest do możliwości importowania pythonowych funkcji z innych plików znajdujących się w tym samym folderze. Plik $create.sql$ tworzy nam tabele do bazy danych. Plik $generate.py$ zawiera funkcje, przy pomocy których generujemy dane do wypełnienia stworzonej wcześniej bazę danych.
+Kolejnym folderem jest $src$. W środku znajdują się pliki, które służą do generowania i tworzenia bazy danych. Plik $\_\_init\_\_.py$, potrzebny jest do możliwości importowania pythonowych funkcji z innych plików znajdujących się w tym samym folderze. Plik $create.sql$ tworzy nam tabele do bazy danych. Plik $generate.py$ zawiera funkcje, przy pomocy których generujemy dane do wypełnienia stworzonej wcześniej bazę danych.
 
 Plik $main.py$ służy do wygenerowania tabel z danymi oraz wgrania ich na serwer.
+
+Plik *requirements.txt* zawiera potrzebne pakiety dla Pythona.  
 
 <!-- jak dojdzie coś później, to trzeba zupdatować -->
 
 
 # Kolejność i sposób uruchamiania plików, aby uzyskać gotowy projekt
-    1. Posiadaj Pythona 3.7.9
-    2. Zainstaluj potrzebne pakiety komendą: `pip install -r requirements.txt`
-    3. Uruchom program main.py: `python main.py`
-    4. Urchom i skompiluj za pomocą Knit plik `report.rmd`
+
+1. Posiadaj Pythona 3.7.9.
+2. Zainstaluj potrzebne pakiety komendą `pip install -r requirements.txt`.
+3. Uruchom program main.py `python main.py`.
+4. Urchom i skompiluj za pomocą Knit plik `report.rmd`.
+
 
 # Schemat bazy danych i zależności funkcyjne w tabelach
 
@@ -164,13 +169,13 @@ R(**address_id**, country, city, street,number,postal_code)
 R(**game_id**,title, release_year,min_players,max_players,play_time,min_age,type,price)
     
 - game_id [SMALLINT UNSIGNED]: numer identyfikacyjny gry
-- title [VARCHAR(100)]: oryginalny tytuł gry
+- title [VARCHAR(300)]: oryginalny tytuł gry
 - release_year [DATE]: rok wydania gry
 - min_players [TINYINT UNSIGNED]: minimalna liczba graczy
 - max_players [TINYINT UNSIGNED]: maksymalna liczba graczy
 - play_time [SMALLINT UNSIGNED]: szacowany czas gry w minutach
 - min_age [TINYINT UNSIGNED]: wiek minimalny do zagrania w grę
-- type [VARCHAR(18)]:  typ gry tzn czy jest to gr czy rozszerzenie do gry 
+- type [VARCHAR(18)]:  typ gry tzn czy jest to gra czy rozszerzenie do gry 
 - price [DECIMAL]: cena za kupno gry
 
 \begin{multline*}
