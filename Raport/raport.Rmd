@@ -354,7 +354,7 @@ ggplot(sales_df3_10, aes(x=factor(title, levels=title),y=dochod)) + geom_col(fil
   coord_flip() 
 ```
 
-Najbardziej dochodową grą, która była sprzadawana była gra **`r sales_df3_10$title[10]`**. Sprzedano **`r as.numeric(sales_df3_10$game_num[10])` ** egzemplarzy i dochód z niej wyniósł **`r sales_df3_10$dochod[10]` zł**.
+Najbardziej dochodową grą, która była sprzadawana, była gra **`r sales_df3_10$title[10]`**. Sprzedano **`r as.numeric(sales_df3_10$game_num[10])` ** egzemplarzy i dochód z niej wyniósł **`r sales_df3_10$dochod[10]` zł**.
 
 ## 10 gier przynoszących największy dochód z wypożyczeń
 
@@ -381,7 +381,7 @@ Przychody sklepu „Geeks & Dragons” dzielą się na 3 typy:
   - przychody z wypożyczeń,
   - wpisowe za udział w turnieju.
 
-Dochodami sklepu jest suma przychodów pomniejszona o wydatki, którymi są pensje wypłacane pracownikom.
+Dochodami sklepu jest suma przychodów pomniejszona o wydatki.
 
 ## Ranking Przychodów w poszczególnych miesiącach
 
@@ -423,7 +423,7 @@ kable(income[,c(1,4:7)], col.names=c("Data","Sprzadaż","Wypożyczenia","Turniej
   kable_styling(latex_options = c("HOLD_position")) %>% row_spec(0, bold=T, background=color1)
 ```
 
-W tabeli \ref{income} znajdują się kwoty przychodów z różnych typów, które uzyskano w każdym miesiącu ostatniego roku działalności sklepu. Największy przychód ze sprzedaży gier był **`r sale_max[1]`** i wyniósł **`r sale_max[2]` zł**. Największy przychód z wypożyczeń został uzyskany w **`r rental_max[1]`** i wyniósł **`r rental_max[2]` zł**. Natomiast największy całkowicie przychód został osiągnięty **`r total_max[1]`** i wyniósł **`r as.numeric(total_max[2]/1)` zł**.
+W tabeli \ref{income} znajdują się kwoty przychodów różnych typów, które uzyskano w poszczególnych miesiącach sklepu. Największy przychód ze sprzedaży gier był **`r sale_max[1]`** i wyniósł **`r sale_max[2]` zł**. Największy przychód z wypożyczeń został uzyskany w **`r rental_max[1]`** i wyniósł **`r rental_max[2]` zł**. Natomiast największy całkowicie przychód został osiągnięty **`r total_max[1]`** i wyniósł **`r as.numeric(total_max[2]/1)` zł**.
 
 ```{r fig.cap = "Przychody w poszczególnych miesiącach z podziałem na typ przychodu."}
 income_long <- income %>% select(-month, -year, -total) %>% mutate(across(sale_income:fee, as.integer)) %>%
