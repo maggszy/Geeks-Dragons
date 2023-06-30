@@ -97,8 +97,8 @@ Plik $main.py$ służy do wygenerowania tabel z danymi oraz wgrania ich na serwe
 
 # Kolejność i sposób uruchamiania plików, aby uzyskać gotowy projekt
     1. Posiadaj Pythona 3.7.9
-    2. Zainstaluj potrzebne pakiety komendą: `pip install -r requirements.txt`
-    3. Uruchom program main.py: `python main.py`
+    2. Zainstaluj potrzebne pakiety komendą `pip install -r requirements.txt`
+    3. Uruchom program main.py `python main.py`
     4. Urchom i skompiluj za pomocą Knit plik `report.rmd`
 
 # Schemat bazy danych i zależności funkcyjne w tabelach
