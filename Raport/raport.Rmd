@@ -49,15 +49,16 @@ con <- dbConnect(RMariaDB::MariaDB(),
 # Ranking na pracownika miesiąca
 
 Ranking na pracownika miesiąca polega na wyłonieniu pracownika, który w danym miesiącu sumarycznie sprzedał i wynajął największą liczbę gier.
-W przypadku remisu pracownikiem miesiąca decydującym czynnikiem jest liczba sprzedanych gier.
+
+W przypadku remisu czynnikiem roztrzygającym, kto zostaje pracownikiem miesiąca jest liczba sprzedanych gier.
 
 ```{r, echo = F}
-rental_info <- 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, CONCAT(MONTH(rental_date), ".", YEAR(rental_date)) AS month_date
+rental_info <- 'SELECT employee_id, COUNT(*) AS num_rented, CONCAT(first_name, " ", last_name) AS employee, MONTH(rental_date) as month, YEAR(rental_date) as year, DATE_FORMAT(rental_date,"%m-%Y") AS month_date
 FROM Employees
 INNER JOIN Rentals USING (employee_id)
 GROUP BY month_date, employee_id'
 
-sales_info <- 'SELECT employee_id, COUNT(*) AS num_sold, CONCAT(first_name, " ", last_name) AS employee, MONTH(date) as month, YEAR(date) as year, CONCAT(MONTH(date), ".", YEAR(date)) AS month_date
+sales_info <- 'SELECT employee_id, COUNT(*) AS num_sold, CONCAT(first_name, " ", last_name) AS employee, MONTH(date) as month, YEAR(date) as year,  DATE_FORMAT(date, "%m-%Y") AS month_date
 FROM Employees
 INNER JOIN Sales USING (employee_id)
 INNER JOIN Finances USING(payment_id)
@@ -136,9 +137,9 @@ Sklep przeprowadził turnieje w następujących grach: `r unique(tournaments_df$
 ggplot(tournaments_num, aes(factor(title, levels = title), num))+geom_col(fill=color1)+labs(x ="Tytuł gry", y = "Liczba turniejów")+coord_flip()
 ```
 
-Ranking top graczy powstaje na podstawie punktów przyznawanych za miejsca w turnieju. Jeśli gracz wziął udział w większej liczbie turniejów z tej samej gry punkty są sumowane. 
+Ranking top graczy powstaje na podstawie punktów przyznawanych za miejsca w turnieju. Jeśli gracz wziął udział w większej liczbie turniejów z tej samej gry to punkty są sumowane. 
 
-Punkty są przyznawane w sposób przedstawiony w tabeli 2. Za pozostałe miejsca przyznawane jest 0 punktów.
+Punkty są przyznawane w sposób przedstawiony w tabeli \ref{tab_2}. Za pozostałe miejsca przyznawane jest 0 punktów.
 
 ```{r, echo=F, message=F}
 points_rules <- c(100, 90, 80, 75, 70, 65, 60, 55, 50, 45, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
@@ -146,7 +147,7 @@ points_rules <- c(100, 90, 80, 75, 70, 65, 60, 55, 50, 45, 40, 38, 36, 34, 32, 3
 point_matrix<-as.data.frame(matrix(points_rules, 10, 4))
 rownames(point_matrix) <- c(1,2,3,4,5,6,7,8,9,10)
 
-kable(point_matrix, caption="Punkty za odpowiednie miejsca.", col.names=c("1-10", "11-20", "21-30", "31-40"), row.names=TRUE)%>%row_spec(0, bold = T,background=color1)%>%column_spec(1, bold = T,background=color1)%>%kable_styling(latex_options = c("HOLD_position"),position = "center")
+kable(point_matrix, caption="\\label{tab_2} Punkty za poszczególne miejsca.", col.names=c("1-10", "11-20", "21-30", "31-40"), row.names=TRUE)%>%row_spec(0, bold = T,background=color1)%>%column_spec(1, bold = T,background=color1)%>%kable_styling(latex_options = c("HOLD_position"),position = "center")
 ```
 
 ```{r, echo=F, message=F}
@@ -202,7 +203,7 @@ pop_rent_df <- dbGetQuery(con, pop_rent)
 ```
 
 ```{r, fig.cap="10 najczęściej wypożyczanych gier."}
-ggplot(pop_rent_df %>% arrange(game_num, desc(title)) %>% head(10) , aes(x=factor(title, levels=title), y=as.integer(game_num))) + geom_col(fill=color1) + labs(x ="Tytuł gry", y = "Liczba wypożyczeń") + 
+ggplot(pop_rent_df %>% head(10) %>%  arrange(game_num, desc(title)), aes(x=factor(title, levels=title), y=as.integer(game_num))) + geom_col(fill=color1) + labs(x ="Tytuł gry", y = "Liczba wypożyczeń") + 
   coord_flip()
 ```
 
@@ -228,7 +229,7 @@ pop_sales_df <- dbGetQuery(con, pop_sales)
 ```
 
 ```{r, fig.cap = "10 najliczniej sprzedanych gier."}
-ggplot(pop_sales_df %>% arrange(game_num, desc(title))%>% head(10) , aes(x=factor(title, levels=title), y=as.integer(game_num))) + geom_col(fill=color4) + labs(x ="Tytuł gry", y = "Liczba sprzedanych") +
+ggplot(pop_sales_df %>% head(10) %>%arrange(game_num, desc(title)), aes(x=factor(title, levels=title), y=as.integer(game_num))) + geom_col(fill=color4) + labs(x ="Tytuł gry", y = "Liczba sprzedanych") +
   coord_flip()
 ```
 
@@ -261,7 +262,7 @@ old_recent <- now_rented_games%>%arrange(rental_date)%>%head(1)
 new_recent <- now_rented_games%>%arrange(desc(rental_date))%>%head(1)
 ```
 
-Aktualnie jest **`r now_rented_games%>%count()`** wypożyczonych gier. Najnowsze wypożyczenie pochodzi z `r format(new_recent$rental_date, "%d.%m.%Y")`. Najstarsze wypożyczenie pochodzi z `r format(old_recent$rental_date, "%d.%m.%Y")`.
+Aktualnie jest **`r now_rented_games%>%count()`** wypożyczonych gier. Najnowsze wypożyczenie pochodzi z `r format(new_recent$rental_date, "%d-m-%Y")`. Najstarsze wypożyczenie pochodzi z `r format(old_recent$rental_date, "%d-%m-%Y")`.
 
 ## Najdłużejsze przetrzymywania
 
@@ -276,14 +277,14 @@ ggplot(keep_games_df%>%filter(!is.na(return_date))%>%group_by(day_num)%>%summari
   geom_col(fill=color3)+
   theme(legend.position = "none") + labs(x ="Długość wypożyczenia", y = "Ilość wypożyczeń")
 ```
-Gra najdłużej była przetrzymywana przez **`r day_num_max`** dni. Gry, które były przetrzymywane przez tyle dni zostały przedstawione w tabeli 5.
+Gra najdłużej była przetrzymywana przez **`r day_num_max`** dni. Gry, które były przetrzymywane przez tyle dni zostały przedstawione w tabeli \ref{tab_5}.
 
 ```{r, echo=F}
 keep_games_table<- keep_games_df %>% filter(day_num==day_num_max) %>% 
   select(title, customer_name, rental_date) %>% 
-  mutate(rental_date=format(rental_date, "%d.%m.%Y"))
+  mutate(rental_date=format(rental_date, "%d-%m-%Y"))
 
-kable(keep_games_table, col.names=c("Tytuł gry","Klient","Data wypożyczenia"), caption="Najdłużej przetrzymywane gry w historii sklepu wraz z datami wypożyczenia.", align='llcc')%>%kable_styling(latex_options = c("HOLD_position"),position = "center") %>% 
+kable(keep_games_table, col.names=c("Tytuł gry","Klient","Data wypożyczenia"), caption="\\label{tab_5} Najdłużej przetrzymywane gry w historii sklepu wraz z datami wypożyczenia.", align='llcc')%>%kable_styling(latex_options = c("HOLD_position"),position = "center") %>% 
   row_spec(0, bold=T, background=color1)
 ```
 
@@ -292,20 +293,19 @@ kable(keep_games_table, col.names=c("Tytuł gry","Klient","Data wypożyczenia"),
 Gry są średnio przetrzymywane **`r  round(mean(keep_games_df$day_num, na.rm=T),3)`** dni. Ochylenie standardowe wynosi **`r  round(sd(keep_games_df$day_num, na.rm=T),3)`** dni.
 
 ```{r echo=FALSE}
-mean_keep_games <- keep_games_df %>% group_by(title) %>% summarise(mean_time=mean(day_num, na.rm=T)) %>% arrange(mean_time, title)
+mean_keep_games <- keep_games_df %>% group_by(title) %>% summarise(mean_time=mean(day_num, na.rm=T)) %>% arrange(desc(mean_time), title)
 ```
 
 ```{r, echo=F, fig.cap="Średnie przetrzymywanie w zależności od gry."}
-ggplot(mean_keep_games %>% head(10), aes(factor(title, levels=title), mean_time)) +
+ggplot(mean_keep_games %>% head(10) %>% arrange(mean_time), aes(factor(title, levels=title), mean_time)) +
   geom_col(fill=color1) + labs(x ="Tytuł gry", y = "Średnia ilość dni") + coord_flip()
 ```
 
 ```{r, echo=F}
-mean_max <- mean_keep_games$mean_time[1]
-mean_max_game <- mean_keep_games %>% filter(mean_time==mean_max)
+mean_max <- mean_keep_games%>%slice_max(mean_time)
 ```
 
-Najdłuższy średni czas przetrzymywania to **`r round(mean_max, 3)`** uzyskany przez grę **`r mean_max_game$title`**.
+Najdłuższy średni czas przetrzymywania to **`r round(mean_max$mean_time, 3)`** uzyskany przez grę **`r mean_max$title`**.
 
 # Rankingi gier przynoszących największe zyski
 
@@ -386,13 +386,13 @@ Dochodami sklepu jest suma przychodów pomniejszona o wydatki, którymi są pens
 ## Ranking Przychodów w poszczególnych miesiącach
 
 ```{r}
-sales_income <- 'SELECT DATE_FORMAT(date, "%Y-%m") as ym, EXTRACT(YEAR FROM Finances.date) AS year, EXTRACT(MONTH FROM Finances.date) AS month, SUM(Finances.value) AS dochod
+sales_income <- 'SELECT DATE_FORMAT(date, "%m-%Y") as ym, EXTRACT(YEAR FROM Finances.date) AS year, EXTRACT(MONTH FROM Finances.date) AS month, SUM(Finances.value) AS dochod
 FROM Sales
 INNER JOIN Finances USING(payment_id)
 INNER JOIN Inventory USING(inventory_id)
 GROUP BY year, month;'
 
-rentals_income <- 'SELECT DATE_FORMAT(date, "%Y-%m") as ym, EXTRACT(YEAR FROM Finances.date) AS year, EXTRACT(MONTH FROM Finances.date) AS month, SUM(Finances.value) AS dochod
+rentals_income <- 'SELECT DATE_FORMAT(date, "%m-%Y") as ym, EXTRACT(YEAR FROM Finances.date) AS year, EXTRACT(MONTH FROM Finances.date) AS month, SUM(Finances.value) AS dochod
 FROM Rentals
 INNER JOIN Finances USING(payment_id)
 INNER JOIN Inventory USING(inventory_id)
@@ -439,7 +439,7 @@ ggplot(income_long, aes(x=ym,y=as.integer(value), fill=as.factor(type))) + geom_
 ## Dochód sklepu w poszczególnych miesiącach
 
 ```{r}
-in_out <- 'SELECT DATE_FORMAT(date, "%Y-%m") as ym, EXTRACT(YEAR FROM date) AS year, EXTRACT(MONTH FROM date) AS month, in_out, SUM(value) AS income
+in_out <- 'SELECT DATE_FORMAT(date, "%m-%Y") as ym, EXTRACT(YEAR FROM date) AS year, EXTRACT(MONTH FROM date) AS month, in_out, SUM(value) AS income
 FROM Finances
 GROUP BY year, month, in_out'
 

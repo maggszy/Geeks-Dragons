@@ -44,8 +44,8 @@ Do stworzenia projektu zostały użyte następujące technologie:
   3. Raport i dokumentacja:
       * Rmarkdown
     
-  <!-- 4. Tworzenie schematu baz danych: -->
-  <!--    * Miro -->
+  4. Tworzenie schematu baz danych:
+     * Miro
   
 # Lista plików i opis ich zawartości
 
@@ -75,7 +75,14 @@ W folderze **bazy_danych** znajdują się pliki tworzące cały projekt. Struktu
 .2 main.py.
 }
 
-W folderze $data$ znajdują się pliki $.csv$, których użyliśmy do generowania adresów,imion, nazwisk zarówno klientów sklepu jak i też samych pracowników. Użyliśmy również ich do generowania gier, które można wypożyczyć albo kupić.
+W folderze $data$ znajdują się pliki $.csv$, których użyliśmy do generowania adresów,imion, nazwisk zarówno klientów sklepu jak i też samych pracowników. Użyliśmy również ich do generowania gier, które można wypożyczyć albo kupić.Źródła danych:
+
+  - $address.csv$ - https://bip.um.wroc.pl/artykul/389/50007/aktualne-wykazy-nazw-ulic-i-adresow
+  - $english\_first\_name.csv$ - https://catalog.data.gov/dataset/popular-baby-names/resource/02e8f55e-2157-4cb2-961a-2aabb75cbc8b
+  - $english\_last\_name.csv$ - https://www.census.gov/topics/population/genealogy/data/2010_surnames.html
+  - $games.csv$ - https://www.kaggle.com/datasets/andrewmvd/board-games
+  - $polish\_female\_last_name.csv$ oraz $polis\_male\_last\_name.csv$- https://dane.gov.pl/pl/dataset/1681,nazwiska-osob-zyjacych-wystepujace-w-rejestrze-pesel
+  - $polish\_female\_name.csv$ oraz $polish\_female\_name.csv$ - https://dane.gov.pl/pl/dataset/219,imiona-nadawane-dzieciom-w-polsce
 
 Plik $dokumentacja.pdf$ jest plikiem zawierającym dokumentacje.
 
@@ -269,3 +276,7 @@ Każda sprzedaż ma unikatowy sales_id. Transakcja sprzedaży może być też je
 # Postać normalna bazy danych
 
 Jak możemy zauważyć w naszej bazie danych w każdej tabeli wszystkie nietrywialne relację zaczynają się od nadklucza wię spełnia postać BCNF z czego wynika także że spełnia postać normalną EKNF.
+
+# Co było najtrudniejsze w projekcie?
+
+Największym wyzwaniem w projekcie było poprawne wygenerowanie danych i wrzucenie ich na serwer. Wyzwaniem było także zrozumienie i zaprojektowanie bazy danych w ten sposób był spełniała postać normalną EKNF.
