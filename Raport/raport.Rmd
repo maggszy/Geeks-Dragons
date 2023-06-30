@@ -209,7 +209,7 @@ ggplot(pop_rent_df %>% arrange(game_num, desc(title)) %>% head(10) , aes(x=facto
 ```{r, echo=FALSE}
 rent_pop_max <- head(pop_rent_df,1)
 rent_pop_max_df <- pop_rent_df %>% filter(game_num==rent_pop_max$game_num)
-gamers_num <- unique(c(rent_pop_max$min_players, rent_pop_max$min_players))
+gamers_num <- unique(c(rent_pop_max$min_players, rent_pop_max$max_players))
 ```
 
 Najczęściej wypożyczana gra to **`r rent_pop_max_df$title`**, została wypożyczona **`r as.integer(rent_pop_max$game_num)`** razy. Kosztuje `r rent_pop_max$price` zł, minimalny wiek graczy to `r rent_pop_max$min_age` lat, można w nią grać na `r paste(gamers_num, collapse='-' )` `r if_else(length(gamers_num)==1 && gamers_num[1]==1,"gracza","graczy")`.
@@ -235,7 +235,7 @@ ggplot(pop_sales_df %>% arrange(game_num, desc(title))%>% head(10) , aes(x=facto
 ```{r, echo=FALSE}
 sale_pop_max <- head(pop_sales_df,1)
 sale_pop_max_df <- pop_sales_df %>% filter(game_num==sale_pop_max$game_num)
-gamers_num <- unique(c(sale_pop_max$min_players, sale_pop_max$min_players))
+gamers_num <- unique(c(sale_pop_max$min_players, sale_pop_max$max_players))
 ```
 
 Najczęściej wypożyczana gra to **`r sale_pop_max_df$title`**, została wypożyczona **`r as.integer(sale_pop_max$game_num)`** razy. Kosztuje `r sale_pop_max$price` zł, minimalny wiek graczy to `r sale_pop_max$min_age` lat, można w nią grać na `r paste(gamers_num, collapse='-' )` `r if_else(length(gamers_num)==1 && gamers_num[1]==1,"gracza","graczy")`.
