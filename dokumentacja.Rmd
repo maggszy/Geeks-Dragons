@@ -4,7 +4,7 @@ author: "Urszula Spik, Natalia Jelito, Maciej Karczewski, Magdalena Szymkowiak"
 date: "`r Sys.Date()`"
 output: 
   pdf_document:
-    extra_dependencies: ["dirtree","hyperref", "amsmath"]
+    extra_dependencies: ["dirtree","hyperref", "amsmath","pdfpages", "float","graphicx"]
     number_sections: true
 ---
 
@@ -89,9 +89,24 @@ Plik $main.py$ służy do wgrania tabel z danymi na serwer.
 
 
 # Kolejność i sposób uruchamiania plików, aby uzyskać gotowy projekt
-
+    1. Posiadaj Pythona 3.8.8 (SPRAWDZIĆ)
+    2. Zainstaluj potrzebne pakiety komendą: `pip install -r requirements.txt`
+    3. Uruchom program main.py: `python main.py`
+    4. 
 
 # Schemat bazy danych i zależności funkcyjne w tabelach
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{assets/schemat_bazy_danych.pdf}
+    \caption{Schemt bazy danych}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{C:/Users/mkarc/studia/bazy danych/bazy_danych/schemat_obraz.jpg}
+    \caption{Schemt bazy danych}
+\end{figure}
 
 Klucze główne zaznaczamy przez pogrubienie.
 
